@@ -1,30 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { geoCentroid } from "d3-geo";
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-  Annotation,
-} from "react-simple-maps";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
-const markers = [
-  { markerOffset: -20, name: "Chicago", coordinates: [-87.6298, 41.8781] },
-  { markerOffset: -20, name: "Boston", coordinates: [-71.0589, 42.3601] },
-  { markerOffset: -20, name: "Tulsa", coordinates: [-95.9928, 36.154] },
-  { markerOffset: -20, name: "Baltimore", coordinates: [-76.6122, 39.2904] },
-  { markerOffset: -20, name: "Miami", coordinates: [-80.1918, 25.7617] },
-  {
-    markerOffset: 30,
-    name: "Washington, D.C.",
-    coordinates: [-77.0369, 38.9072],
-  },
-  { markerOffset: -20, name: "Los Angeles", coordinates: [-118.2426, 34.0549] },
-];
-
 const MapComponent = () => {
+  // Track the hovered state
+  const [hoveredState, setHoveredState] = useState(null);
+
+  // Function to handle mouse enter event
+  const handleMouseEnter = (geo) => {
+    setHoveredState(geo.id); // Set the hovered state
+  };
+
+  // Function to handle mouse leave event
+  const handleMouseLeave = () => {
+    setHoveredState(null); // Reset hovered state
+  };
+
   return (
     <ComposableMap projection="geoAlbersUsa">
       <Geographies geography={geoUrl}>
@@ -32,21 +25,25 @@ const MapComponent = () => {
           <>
             <Geography geography={outline} fill="#E9E3DA" />
             <Geography geography={borders} fill="none" stroke="#FFF" />
+
+            {geographies.map((geo) => {
+              const isHovered = geo.id === hoveredState; // Check if the state is hovered
+
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  onMouseEnter={() => handleMouseEnter(geo)} // Trigger on mouse enter
+                  onMouseLeave={handleMouseLeave} // Trigger on mouse leave
+                  fill={isHovered ? "#FF5733" : "#D6D6DA"} // Highlight hovered state
+                  stroke="#333"
+                  strokeWidth={0.5}
+                />
+              );
+            })}
           </>
         )}
       </Geographies>
-      {markers.map(({ name, coordinates, markerOffset }) => (
-        <Marker key={name} coordinates={coordinates} id={name}>
-          <circle r={15} fill="#E42A1D" stroke="#fff" strokeWidth={2} />
-          {/* <text
-            textAnchor="middle"
-            y={markerOffset}
-            style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
-          >
-            {name}
-          </text> */}
-        </Marker>
-      ))}
     </ComposableMap>
   );
 };
