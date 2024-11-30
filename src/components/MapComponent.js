@@ -121,32 +121,51 @@ const MapComponent = () => {
           </select>
         </div>
 
-        {/* State Dropdown */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <label htmlFor="state" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
-            Choose a state
-          </label>
-          <select
-            id="state"
-            value={selectedState || ""}
-            onChange={handleDropdownChange}
+        {/* State Dropdown + Calculate Button */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <label htmlFor="state" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
+              Choose a state
+            </label>
+            <select
+              id="state"
+              value={selectedState || ""}
+              onChange={handleDropdownChange}
+              style={{
+                padding: "8px",
+                fontSize: "12px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                width: "150px", // Width for the state dropdown
+                textAlign: "center",
+              }}
+            >
+              <option value="">Select a State</option>
+              {/* Populate dropdown with states */}
+              {geographies.map((geo) => (
+                <option key={geo.id} value={geo.properties.name}>
+                  {geo.properties.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Calculate Button */}
+          <button
+            onClick={() => alert('Calculating...')} // You can replace this with your actual calculation logic
             style={{
-              padding: "8px",
+              padding: "8px 16px",
               fontSize: "12px",
-              border: "1px solid #ccc",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
               borderRadius: "4px",
-              width: "150px", // Width for the state dropdown
-              textAlign: "center",
+              cursor: "pointer",
+              transition: "background-color 0.3s",
             }}
           >
-            <option value="">Select a State</option>
-            {/* Populate dropdown with states */}
-            {geographies.map((geo) => (
-              <option key={geo.id} value={geo.properties.name}>
-                {geo.properties.name}
-              </option>
-            ))}
-          </select>
+            Calculate
+          </button>
         </div>
       </div>
 
