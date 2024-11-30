@@ -1,4 +1,3 @@
-// src/components/TaxBreakdown.js
 import React from "react";
 import TaxLabel from "./TaxLabel";
 import TaxValue from "./TaxValue";
@@ -21,66 +20,90 @@ const TaxBreakdown = () => {
   return (
     <div
       style={{
-        width: "80%",
-        margin: "0 auto", // This centers the box horizontally
-        marginTop: "-350px",
-        marginBottom: "40px",
-        padding: "20px",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
+        display: "flex", // Set display to flex for side-by-side layout
+        justifyContent: "space-between", // This ensures the two components are spaced apart
+        width: "100%", // Make the entire container take full width
+        padding: "20px", // Padding for the container
+        marginTop: "-350px", // Adjust the top margin if necessary
       }}
     >
-      <h2 style={{ textAlign: "center" }}>Withholding</h2>
+      {/* Withholding Box */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start", // Align items to the start (left)
+          width: "48%", // Box takes up ~50% of the container
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
         }}
       >
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Salary" />
-          <TaxValue value={breakdown.salary} />
+        <h2 style={{ textAlign: "center" }}>Withholding</h2>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+          }}
+        >
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Salary" />
+            <TaxValue value={breakdown.salary} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Federal Income Tax" />
+            <TaxValue value={breakdown.federalIncomeTax} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="State Income Tax" />
+            <TaxValue value={breakdown.stateIncomeTax} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Social Security" />
+            <TaxValue value={breakdown.socialSecurity} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Medicare" />
+            <TaxValue value={breakdown.medicare} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="SDI (State Disability Insurance)" />
+            <TaxValue value={breakdown.sdi} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="FLI (Family Leave Insurance)" />
+            <TaxValue value={breakdown.fli} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Total Tax" />
+            <TaxValue value={breakdown.totalTax} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Net Pay" />
+            <TaxValue value={breakdown.netPay} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Marginal Tax Rate" />
+            <TaxValue value={breakdown.marginalTaxRate + "%"} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="Average Tax Rate" />
+            <TaxValue value={breakdown.averageTaxRate + "%"} />
+          </div>
         </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Federal Income Tax" />
-          <TaxValue value={breakdown.federalIncomeTax} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="State Income Tax" />
-          <TaxValue value={breakdown.stateIncomeTax} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Social Security" />
-          <TaxValue value={breakdown.socialSecurity} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Medicare" />
-          <TaxValue value={breakdown.medicare} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="SDI (State Disability Insurance)" />
-          <TaxValue value={breakdown.sdi} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="FLI (Family Leave Insurance)" />
-          <TaxValue value={breakdown.fli} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Total tax" />
-          <TaxValue value={breakdown.totalTax} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Net pay" />
-          <TaxValue value={breakdown.netPay} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Marginal tax rate" />
-          <TaxValue value={breakdown.marginalTaxRate + "%"} />
-        </div>
-        <div style={{ display: "flex", width: "100%" }}>
-          <TaxLabel label="Average tax rate" />
-          <TaxValue value={breakdown.averageTaxRate + "%"} />
+      </div>
+
+      {/* Another Component Box */}
+      <div
+        style={{
+          width: "48%", // Another box taking up ~50% of the container
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+        }}
+      >
+        <h2 style={{ textAlign: "center" }}>Another Component</h2>
+        <div>
+          {/* Add content for the second component here */}
+          <p>Content for another box can go here.</p>
         </div>
       </div>
     </div>
