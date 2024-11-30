@@ -1,15 +1,13 @@
 // src/App.js
+import React from "react";
+import MapComponent from "./components/MapComponent";
 
-import React from 'react';
-import './styles.css';
-import MapComponent from './components/MapComponent';
-
-function App() {
+const App = () => {
   return (
-    <div className="App">
+    <div>
       <MapComponent />
     </div>
   );
-}
+};
 
 export default App;
