@@ -7,9 +7,10 @@ const TaxLabel = ({ label }) => {
       style={{
         fontWeight: "bold",
         textAlign: "left",
-        width: "150px", // Fixed width for all labels
+        width: "200px", // Fixed width for all labels
         paddingLeft: "20px", // Padding for label to keep space consistent
         marginBottom: "10px", // Adds space between rows of labels
+        whiteSpace: "nowrap", // Prevents wrapping of text
       }}
     >
       {label}

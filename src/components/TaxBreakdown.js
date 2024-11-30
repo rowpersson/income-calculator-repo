@@ -22,6 +22,7 @@ const TaxBreakdown = () => {
     <div
       style={{
         width: "80%",
+        margin: "0 auto", // This centers the box horizontally
         marginTop: "-350px",
         marginBottom: "40px",
         padding: "20px",

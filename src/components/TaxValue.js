@@ -7,7 +7,7 @@ const TaxValue = ({ value }) => {
       style={{
         textAlign: "right", // Align the values to the right
         width: "150px", // Same width for the values to align consistently with the labels
-        paddingRight: "100px", // Add some space between the value and the right edge
+        paddingRight: "200px", // Add some space between the value and the right edge
       }}
     >
       ${value}
