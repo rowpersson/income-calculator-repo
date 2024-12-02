@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Form from "./Form";
-import Map from "./Map";
-import TaxBreakdown from "./TaxBreakdown"; // Import the TaxBreakdown component
-import stateTaxRates from "../data/StateTaxRates"; // Import state tax rates from StateTaxRates.js
+import Form from "../components/Form";
+import Map from "../components/Map";
+import TaxBreakdown from "../components/TaxBreakdown"; // Import the TaxBreakdown component
+import stateTaxRates from "../data/StateTaxRates"; // Import stateTaxRates
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -45,6 +45,13 @@ const MapComponent = () => {
     fetchGeographies();
   }, []);
 
+  useEffect(() => {
+    // Recalculate tax breakdown every time the salary or frequency changes
+    if (originalSalary) {
+      calculateTaxBreakdown();
+    }
+  }, [originalSalary, frequency, selectedState]); // Dependency on originalSalary, frequency, and selectedState
+
   const handleMouseEnter = (geo) => setHoveredState(geo.id);
   const handleMouseLeave = () => setHoveredState(null);
   const handleDropdownChange = (event) => setSelectedState(event.target.value);
@@ -60,68 +67,84 @@ const MapComponent = () => {
     calculateTaxBreakdown();
   };
 
+  // Define the calculateStateTax function here
+  const calculateStateTax = (salary, state) => {
+    const brackets = stateTaxRates[state];
+
+    if (!brackets) {
+      return 0; // No tax if the state doesn't have income tax (e.g., Texas, Florida, etc.)
+    }
+
+    let tax = 0;
+    let lastThreshold = 0;
+
+    // Loop through the tax brackets for the selected state
+    for (const bracket of brackets) {
+      if (salary > bracket.threshold) {
+        tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
+        lastThreshold = bracket.threshold;
+      } else {
+        break;
+      }
+    }
+
+    // Tax the remaining income above the last threshold
+    if (salary > lastThreshold) {
+      tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
+    }
+
+    return tax;
+  };
+
   const calculateTaxBreakdown = () => {
     let salary = parseFloat(grossSalary);
     if (isNaN(salary) || salary <= 0) {
       return; // Skip if salary is invalid or zero
     }
-  
-    // Reset previous tax data to avoid accumulation
-    setTaxData({
-      salary: 0,
-      federalTax: 0,
-      stateTax: 0,
-      socialSecurity: 0,
-      medicare: 0,
-      totalTax: 0,
-      netPay: 0,
-      marginalTaxRate: 0,
-      averageTaxRate: 0,
-    });
-  
-    // Store the original salary for federal tax calculation (don't adjust it for frequency)
-    let annualSalary = salary;
-  
+
     // Adjust salary based on frequency (adjust the salary for state and other tax calculations)
+    let adjustedSalary = salary; // Start with the gross salary
+    let annualSalary = salary; // Store the annual salary for tax calculations
+
     switch (frequency) {
       case "monthly":
-        salary = salary * 12; // Monthly to yearly
+        adjustedSalary = salary / 12; // Monthly
         break;
       case "weekly":
-        salary = salary * 52; // Weekly to yearly
+        adjustedSalary = salary / 52; // Weekly
         break;
       case "bi-weekly":
-        salary = salary * 26; // Biweekly to yearly
+        adjustedSalary = salary / 26; // Biweekly
         break;
       case "hourly":
-        salary = salary * 2080; // Assuming 40 hours/week for 52 weeks
+        adjustedSalary = salary / 2080; // Hourly assuming 40 hours/week for 52 weeks
         break;
       case "annual":
       default:
         break;
     }
-  
-    // Federal tax calculation (simplified) using the **annualized salary** (not the adjusted salary)
-    const federalTax = calculateFederalTax(annualSalary);
-  
-    // State tax calculation (using the adjusted salary based on frequency)
-    const stateTax = calculateStateTax(salary, selectedState);
-  
-    // Social Security and Medicare (approx.)
-    const socialSecurity = Math.min(salary * 0.062, 160200 * 0.062); // Social Security cap for 2023
-    const medicare = salary * 0.0145; // Medicare tax (no cap)
-  
+
+    // Federal tax calculation using the **adjusted salary** for the selected frequency
+    const federalTax = calculateFederalTax(adjustedSalary, frequency);
+
+    // State tax calculation using the adjusted salary based on frequency
+    const stateTax = calculateStateTax(adjustedSalary, selectedState);
+
+    // Social Security and Medicare (based on the adjusted salary)
+    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062); // Social Security cap for 2023
+    const medicare = adjustedSalary * 0.0145; // Medicare tax (no cap)
+
     // Total tax and net pay
     const totalTax = federalTax + stateTax + socialSecurity + medicare;
-    const netPay = salary - totalTax;
-  
-    // Marginal and average tax rates
-    const marginalTaxRate = (federalTax + stateTax) / salary * 100;
-    const averageTaxRate = totalTax / salary * 100;
-  
+    const netPay = adjustedSalary - totalTax;
+
+    // Marginal and average tax rates based on adjusted salary
+    const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
+    const averageTaxRate = totalTax / adjustedSalary * 100;
+
     // Update tax data state
     setTaxData({
-      salary: annualSalary, // Store the original salary
+      salary: annualSalary, // Store the original salary for display
       federalTax,
       stateTax,
       socialSecurity,
@@ -131,10 +154,9 @@ const MapComponent = () => {
       marginalTaxRate,
       averageTaxRate,
     });
-  };  
-  
+  };
 
-  const calculateFederalTax = (salary) => {
+  const calculateFederalTax = (salary, frequency) => {
     // Approximate progressive federal tax brackets for 2023 (simplified)
     const brackets = [
       { threshold: 10275, rate: 0.1 },
@@ -148,6 +170,8 @@ const MapComponent = () => {
 
     let tax = 0;
     let lastThreshold = 0;
+    
+    // Loop through the tax brackets and apply the correct rate
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
         tax += (Math.min(salary, bracket.threshold) - lastThreshold) * bracket.rate;
@@ -156,54 +180,55 @@ const MapComponent = () => {
         break;
       }
     }
-    return tax;
-  };
 
-  const calculateStateTax = (salary, state) => {
-    // Look up the state's tax brackets from StateTaxRates.js
-    const brackets = stateTaxRates[state];
-  
-    if (!brackets) return 0; // If no brackets found, return 0 (for no income tax states like Florida)
-  
-    if (brackets.length === 1 && brackets[0].rate === 0) {
-      // Special case for states with no state income tax
-      return 0;
-    }
-  
-    // Check if the state has a flat rate tax (only one bracket with a rate)
-    if (brackets.length === 1 && brackets[0].threshold === 0) {
-      // It's a flat tax state like Colorado, so apply the rate to the entire salary
-      return salary * brackets[0].rate / 100;
-    }
-  
-    // For progressive tax states, calculate tax progressively
-    let tax = 0;
-    let lastThreshold = 0;
-    
-    for (const bracket of brackets) {
-      if (salary > bracket.threshold) {
-        // Tax the amount between the last threshold and the current bracket threshold
-        tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
-        lastThreshold = bracket.threshold;
-      } else {
-        break;
-      }
-    }
-  
-    // Tax the amount above the last bracket if salary exceeds the highest bracket
+    // Tax on the remaining income above the last threshold
     if (salary > lastThreshold) {
-      tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
+      tax += (salary - lastThreshold) * brackets[brackets.length - 1].rate;
     }
-  
+
+    // If we're calculating for a frequency (monthly, weekly), adjust the tax for that frequency
+    switch (frequency) {
+      case "monthly":
+        tax = tax / 12;
+        break;
+      case "weekly":
+        tax = tax / 52;
+        break;
+      case "bi-weekly":
+        tax = tax / 26;
+        break;
+      case "hourly":
+        tax = tax / 2080;
+        break;
+      case "annual":
+      default:
+        break;
+    }
+
     return tax;
   };
 
-  useEffect(() => {
-    // Recalculate the tax breakdown whenever the salary or frequency changes
-    calculateTaxBreakdown();
-  }, [grossSalary, frequency, selectedState]); // Dependencies are salary, frequency, and selected state
+  // Calculate and display the adjusted salary based on the selected frequency
+  const displaySalary = () => {
+    let salary = parseFloat(grossSalary);
+    if (isNaN(salary) || salary <= 0) {
+      return 0; // If salary is invalid, show 0
+    }
 
-  if (isLoading) return <div>Loading map data...</div>;
+    switch (frequency) {
+      case "monthly":
+        return salary / 12;
+      case "weekly":
+        return salary / 52;
+      case "bi-weekly":
+        return salary / 26;
+      case "hourly":
+        return salary / 2080;
+      case "annual":
+      default:
+        return salary;
+    }
+  };
 
   return (
     <div style={{ position: "relative", height: "80vh" }}>
@@ -227,7 +252,7 @@ const MapComponent = () => {
       
       {/* Pass the dynamically calculated tax data to TaxBreakdown */}
       <TaxBreakdown
-        salary={taxData.salary}
+        salary={displaySalary()} // Show dynamically calculated salary
         federalTax={taxData.federalTax}
         stateTax={taxData.stateTax}
         socialSecurity={taxData.socialSecurity}
