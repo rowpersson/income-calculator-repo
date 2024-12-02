@@ -1,27 +1,16 @@
-// src/components/MapComponent.js
 import React, { useState, useEffect } from "react";
 import Form from "./Form";
 import Map from "./Map";
 import TaxBreakdown from "./TaxBreakdown"; // Import the TaxBreakdown component
+import stateTaxRates from "../data/StateTaxRates"; // Import state tax rates from the external file
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
-// Example California State Tax Brackets for simplicity
-const californiaTaxBrackets = [
-  { threshold: 9325, rate: 0.01 },
-  { threshold: 22107, rate: 0.02 },
-  { threshold: 34892, rate: 0.04 },
-  { threshold: 48435, rate: 0.06 },
-  { threshold: 61214, rate: 0.08 },
-  { threshold: 312686, rate: 0.093 },
-  { threshold: 999999999, rate: 0.103 }, // Upper limit for CA
-];
-
 const MapComponent = () => {
   const [hoveredState, setHoveredState] = useState(null);
-  const [selectedState, setSelectedState] = useState("California"); // Default to California
   const [grossSalary, setGrossSalary] = useState(""); // Salary entered by the user
   const [frequency, setFrequency] = useState(""); // Frequency (monthly, yearly, etc.)
+  const [selectedState, setSelectedState] = useState(""); // Store selected state
   const [geographies, setGeographies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,7 +44,10 @@ const MapComponent = () => {
 
   const handleMouseEnter = (geo) => setHoveredState(geo.id);
   const handleMouseLeave = () => setHoveredState(null);
-  const handleDropdownChange = (event) => setSelectedState(event.target.value);
+  const handleDropdownChange = (event) => {
+    console.log("Selected State:", event.target.value); // Check if it's showing 'Colorado'
+    setSelectedState(event.target.value);
+  };
   const handleSalaryChange = (event) => setGrossSalary(event.target.value);
   const handleFrequencyChange = (event) => setFrequency(event.target.value);
 
@@ -72,7 +64,7 @@ const MapComponent = () => {
     // Federal tax calculation (simplified)
     const federalTax = calculateFederalTax(salary);
 
-    // California state tax calculation (simplified progressive)
+    // State tax calculation (simplified)
     const stateTax = calculateStateTax(salary, selectedState);
 
     // Social Security and Medicare (approx.)
@@ -126,22 +118,29 @@ const MapComponent = () => {
     return tax;
   };
 
+  // Update the calculateStateTax function to handle all states dynamically
   const calculateStateTax = (salary, state) => {
-    if (state === "California") {
-      let tax = 0;
-      let lastThreshold = 0;
+    // Retrieve the tax brackets for the selected state from the stateTaxRates object
+    const brackets = stateTaxRates[state];
 
-      for (const bracket of californiaTaxBrackets) {
-        if (salary > bracket.threshold) {
-          tax += (Math.min(salary, bracket.threshold) - lastThreshold) * bracket.rate;
-          lastThreshold = bracket.threshold;
-        } else {
-          break;
-        }
-      }
-      return tax;
+    if (!brackets) {
+      return 0; // If no brackets exist (i.e., no state income tax), return 0
     }
-    return 0; // Default to no state tax if state is not California
+
+    let tax = 0;
+    let lastThreshold = 0;
+
+    // Loop through the state tax brackets and calculate the tax owed
+    for (const { rate, threshold } of brackets) {
+      if (salary > threshold) {
+        tax += (salary - lastThreshold) * (rate / 100);  // Apply the rate
+        lastThreshold = threshold;
+      } else {
+        break;
+      }
+    }
+
+    return tax;
   };
 
   if (isLoading) return <div>Loading map data...</div>;
@@ -166,7 +165,6 @@ const MapComponent = () => {
         handleMouseLeave={handleMouseLeave}
       />
       
-      {/* Pass the dynamically calculated tax data to TaxBreakdown */}
       <TaxBreakdown
         salary={taxData.salary}
         federalTax={taxData.federalTax}
