@@ -30,7 +30,7 @@ const Form = ({
       {/* Gross Salary Input */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <label htmlFor="grossSalary" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
-          Enter gross income
+          Enter your annual gross income
         </label>
         <input
           id="grossSalary"
@@ -52,7 +52,7 @@ const Form = ({
       {/* Frequency Dropdown */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <label htmlFor="frequency" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
-          Frequency
+          Enter which breakdown you would like to see
         </label>
         <select
           id="frequency"
