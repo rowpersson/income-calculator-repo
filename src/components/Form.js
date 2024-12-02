@@ -1,4 +1,3 @@
-// src/components/Form.js
 import React from "react";
 
 const Form = ({
@@ -11,6 +10,11 @@ const Form = ({
   geographies,
   handleCalculateClick,
 }) => {
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Prevent form submission (page reload)
+    handleCalculateClick(); // Call the parent function
+  };
+
   return (
     <div
       style={{
@@ -103,7 +107,8 @@ const Form = ({
 
         {/* Calculate Button */}
         <button
-          onClick={handleCalculateClick}
+          type="button"
+          onClick={handleSubmit}
           style={{
             padding: "8px 16px",
             fontSize: "12px",

@@ -1,7 +1,14 @@
-// src/components/TaxBreakdown.js
 import React from "react";
 import TaxLabel from "./TaxLabel";
 import TaxValue from "./TaxValue";
+
+// Helper function to format numbers with commas
+const formatNumber = (value) => {
+  if (typeof value === "number") {
+    return value.toLocaleString(); // Adds commas to numbers
+  }
+  return value; // If the value is not a number, return it as is
+};
 
 const TaxBreakdown = ({
   salary,
@@ -37,39 +44,39 @@ const TaxBreakdown = ({
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Salary" />
-            <TaxValue value={salary} />
+            <TaxValue value={formatNumber(salary)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Federal Income Tax" />
-            <TaxValue value={federalTax} />
+            <TaxValue value={formatNumber(federalTax)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="State Income Tax" />
-            <TaxValue value={stateTax} />
+            <TaxValue value={formatNumber(stateTax)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Social Security" />
-            <TaxValue value={socialSecurity} />
+            <TaxValue value={formatNumber(socialSecurity)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Medicare" />
-            <TaxValue value={medicare} />
+            <TaxValue value={formatNumber(medicare)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Total Tax" />
-            <TaxValue value={totalTax} />
+            <TaxValue value={formatNumber(totalTax)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Net Pay" />
-            <TaxValue value={netPay} />
+            <TaxValue value={formatNumber(netPay)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Marginal Tax Rate" />
-            <TaxValue value={marginalTaxRate + "%"} />
+            <TaxValue value={marginalTaxRate.toFixed(2) + "%"} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Average Tax Rate" />
-            <TaxValue value={averageTaxRate + "%"} />
+            <TaxValue value={averageTaxRate.toFixed(2) + "%"} />
           </div>
         </div>
       </div>

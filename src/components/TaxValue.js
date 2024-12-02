@@ -1,7 +1,9 @@
-// src/components/TaxValue.js
 import React from "react";
 
 const TaxValue = ({ value }) => {
+  const isPercentage = value.includes("%"); // Check if the value contains a "%" sign
+  const formattedValue = typeof value === "number" ? value.toLocaleString() : value; // Format numbers with commas
+
   return (
     <div
       style={{
@@ -10,7 +12,7 @@ const TaxValue = ({ value }) => {
         paddingRight: "200px", // Add some space between the value and the right edge
       }}
     >
-      ${value}
+      {isPercentage ? formattedValue : `$${formattedValue}`} {/* Display without $ for percentages */}
     </div>
   );
 };
