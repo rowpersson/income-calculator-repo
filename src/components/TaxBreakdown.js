@@ -20,6 +20,8 @@ const TaxBreakdown = ({
   netPay,
   marginalTaxRate,
   averageTaxRate,
+  rothContribution, // Add rothContribution prop
+  preTax401k, // Add preTax401k prop
 }) => {
   return (
     <div
@@ -77,6 +79,15 @@ const TaxBreakdown = ({
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Average Tax Rate" />
             <TaxValue value={averageTaxRate.toFixed(2) + "%"} />
+          </div>
+          {/* Add Pre-tax 401k and Roth Contribution to the breakdown */}
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="401k Contribution (Pre-tax)" />
+            <TaxValue value={formatNumber(preTax401k)} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="401k Contribution (Roth)" />
+            <TaxValue value={formatNumber(rothContribution)} />
           </div>
         </div>
       </div>

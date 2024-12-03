@@ -25,10 +25,13 @@ const MapComponent = () => {
     netPay: 0,
     marginalTaxRate: 0,
     averageTaxRate: 0,
+    rothContribution: 0, // Track Roth contribution separately
+    preTax401k: 0, // Track Pre-tax 401(k) contribution
   });
 
-  // Store the original salary separately
   const [originalSalary, setOriginalSalary] = useState(null);
+  const [k401Contribution, setK401kContribution] = useState(0); // Store the 401(k) contribution amount
+  const [isRoth, setIsRoth] = useState(false); // Track if the 401(k) contribution is Roth or traditional
 
   useEffect(() => {
     const fetchGeographies = async () => {
@@ -46,11 +49,10 @@ const MapComponent = () => {
   }, []);
 
   useEffect(() => {
-    // Recalculate tax breakdown every time the salary or frequency changes
     if (originalSalary) {
       calculateTaxBreakdown();
     }
-  }, [originalSalary, frequency, selectedState]); // Dependency on originalSalary, frequency, and selectedState
+  }, [originalSalary, frequency, selectedState, k401Contribution, isRoth]); // Recalculate if 401k or Roth changes
 
   const handleMouseEnter = (geo) => setHoveredState(geo.id);
   const handleMouseLeave = () => setHoveredState(null);
@@ -63,11 +65,18 @@ const MapComponent = () => {
     setFrequency(event.target.value);
   };
 
+  const handle401kChange = (event) => {
+    setK401kContribution(parseFloat(event.target.value) || 0); // Handle 401k contribution change
+  };
+
+  const handleRothChange = (event) => {
+    setIsRoth(event.target.checked); // Handle Roth 401k toggle
+  };
+
   const handleCalculateClick = () => {
     calculateTaxBreakdown();
   };
 
-  // Define the calculateStateTax function here
   const calculateStateTax = (salary, state) => {
     const brackets = stateTaxRates[state];
 
@@ -78,7 +87,6 @@ const MapComponent = () => {
     let tax = 0;
     let lastThreshold = 0;
 
-    // Loop through the tax brackets for the selected state
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
         tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
@@ -88,7 +96,6 @@ const MapComponent = () => {
       }
     }
 
-    // Tax the remaining income above the last threshold
     if (salary > lastThreshold) {
       tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
     }
@@ -96,68 +103,7 @@ const MapComponent = () => {
     return tax;
   };
 
-  const calculateTaxBreakdown = () => {
-    let salary = parseFloat(grossSalary);
-    if (isNaN(salary) || salary <= 0) {
-      return; // Skip if salary is invalid or zero
-    }
-
-    // Adjust salary based on frequency (adjust the salary for state and other tax calculations)
-    let adjustedSalary = salary; // Start with the gross salary
-    let annualSalary = salary; // Store the annual salary for tax calculations
-
-    switch (frequency) {
-      case "monthly":
-        adjustedSalary = salary / 12; // Monthly
-        break;
-      case "weekly":
-        adjustedSalary = salary / 52; // Weekly
-        break;
-      case "bi-weekly":
-        adjustedSalary = salary / 26; // Biweekly
-        break;
-      case "hourly":
-        adjustedSalary = salary / 2080; // Hourly assuming 40 hours/week for 52 weeks
-        break;
-      case "annual":
-      default:
-        break;
-    }
-
-    // Federal tax calculation using the **adjusted salary** for the selected frequency
-    const federalTax = calculateFederalTax(adjustedSalary, frequency);
-
-    // State tax calculation using the adjusted salary based on frequency
-    const stateTax = calculateStateTax(adjustedSalary, selectedState);
-
-    // Social Security and Medicare (based on the adjusted salary)
-    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062); // Social Security cap for 2023
-    const medicare = adjustedSalary * 0.0145; // Medicare tax (no cap)
-
-    // Total tax and net pay
-    const totalTax = federalTax + stateTax + socialSecurity + medicare;
-    const netPay = adjustedSalary - totalTax;
-
-    // Marginal and average tax rates based on adjusted salary
-    const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
-    const averageTaxRate = totalTax / adjustedSalary * 100;
-
-    // Update tax data state
-    setTaxData({
-      salary: annualSalary, // Store the original salary for display
-      federalTax,
-      stateTax,
-      socialSecurity,
-      medicare,
-      totalTax,
-      netPay,
-      marginalTaxRate,
-      averageTaxRate,
-    });
-  };
-
   const calculateFederalTax = (salary, frequency) => {
-    // Approximate progressive federal tax brackets for 2023 (simplified)
     const brackets = [
       { threshold: 11000, rate: 0.1 },
       { threshold: 44725, rate: 0.12 },
@@ -165,21 +111,16 @@ const MapComponent = () => {
       { threshold: 182100, rate: 0.24 },
       { threshold: 231250, rate: 0.32 },
       { threshold: 578100, rate: 0.35 },
-      { threshold: Infinity, rate: 0.37 }, // Use Infinity for the last bracket
+      { threshold: Infinity, rate: 0.37 },
     ];
-  
+
     let tax = 0;
     let lastThreshold = 0;
-  
-    // Step 1: Calculate tax based on the **full annual salary**
-    console.log("Calculating tax for annual salary:", salary);
-  
-    // Make sure salary is treated as annual before starting calculation
+
     if (frequency !== "annual") {
-      salary *= 12;  // Convert monthly, weekly, or bi-weekly to annual salary
+      salary *= 12; // Convert monthly, weekly, or bi-weekly to annual salary
     }
-  
-    // Loop through the brackets to calculate the federal tax
+
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
         tax += (Math.min(salary, bracket.threshold) - lastThreshold) * bracket.rate;
@@ -188,45 +129,94 @@ const MapComponent = () => {
         break;
       }
     }
-  
-    // Tax on the remaining income above the last threshold
+
     if (salary > lastThreshold) {
       tax += (salary - lastThreshold) * brackets[brackets.length - 1].rate;
     }
-  
-    console.log("Federal Tax (Annual):", tax);
-  
-    // Step 2: Adjust the tax based on the selected frequency
-    let adjustedTax = tax; // Start with the calculated annual tax
-  
+
+    let adjustedTax = tax;
     switch (frequency) {
       case "monthly":
-        adjustedTax = adjustedTax / 12;  // Monthly withholding
-        console.log("Adjusted Federal Tax (Monthly):", adjustedTax);
+        adjustedTax = adjustedTax / 12;
         break;
       case "weekly":
-        adjustedTax = adjustedTax / 52;  // Weekly withholding
-        console.log("Adjusted Federal Tax (Weekly):", adjustedTax);
+        adjustedTax = adjustedTax / 52;
         break;
       case "bi-weekly":
-        adjustedTax = adjustedTax / 26;  // Bi-weekly withholding
-        console.log("Adjusted Federal Tax (Bi-weekly):", adjustedTax);
+        adjustedTax = adjustedTax / 26;
         break;
       case "hourly":
-        adjustedTax = adjustedTax / 2080;  // Hourly withholding
-        console.log("Adjusted Federal Tax (Hourly):", adjustedTax);
+        adjustedTax = adjustedTax / 2080;
         break;
       case "annual":
       default:
-        console.log("Adjusted Federal Tax (Annual):", adjustedTax);
         break;
     }
-  
-    return adjustedTax;
-  };  
-  
 
-  // Calculate and display the adjusted salary based on the selected frequency
+    return adjustedTax;
+  };
+
+  const calculateTaxBreakdown = () => {
+    let salary = parseFloat(grossSalary);
+    if (isNaN(salary) || salary <= 0) {
+      return; // Skip if salary is invalid or zero
+    }
+
+    let adjustedSalary = salary;
+    let annualSalary = salary; // Store the annual salary for tax calculations
+
+    // Subtract the 401(k) contribution if it's traditional (pre-tax)
+    if (!isRoth) {
+      adjustedSalary -= k401Contribution;
+    }
+
+    switch (frequency) {
+      case "monthly":
+        adjustedSalary = salary / 12;
+        break;
+      case "weekly":
+        adjustedSalary = salary / 52;
+        break;
+      case "bi-weekly":
+        adjustedSalary = salary / 26;
+        break;
+      case "hourly":
+        adjustedSalary = salary / 2080;
+        break;
+      case "annual":
+      default:
+        break;
+    }
+
+    // Calculate federal tax, state tax, social security, medicare
+    const federalTax = calculateFederalTax(adjustedSalary, frequency);
+    const stateTax = calculateStateTax(adjustedSalary, selectedState);
+
+    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062);
+    const medicare = adjustedSalary * 0.0145;
+
+    const totalTax = federalTax + stateTax + socialSecurity + medicare;
+    const netPay = adjustedSalary - totalTax;
+
+    const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
+    const averageTaxRate = totalTax / adjustedSalary * 100;
+
+    // Update tax data state with Roth contribution and pre-tax 401(k)
+    setTaxData({
+      salary: annualSalary,
+      federalTax,
+      stateTax,
+      socialSecurity,
+      medicare,
+      totalTax,
+      netPay,
+      marginalTaxRate,
+      averageTaxRate,
+      rothContribution: isRoth ? k401Contribution : 0, // Only track Roth contributions if applicable
+      preTax401k: isRoth ? 0 : k401Contribution, // Only track pre-tax contributions if it's a traditional 401k
+    });
+  };
+
   const displaySalary = () => {
     let salary = parseFloat(grossSalary);
     if (isNaN(salary) || salary <= 0) {
@@ -259,6 +249,8 @@ const MapComponent = () => {
         handleDropdownChange={handleDropdownChange}
         geographies={geographies}
         handleCalculateClick={handleCalculateClick}
+        handle401kChange={handle401kChange}
+        handleRothChange={handleRothChange}
       />
       <Map
         geoUrl={geoUrl}
@@ -267,10 +259,8 @@ const MapComponent = () => {
         handleMouseEnter={handleMouseEnter}
         handleMouseLeave={handleMouseLeave}
       />
-      
-      {/* Pass the dynamically calculated tax data to TaxBreakdown */}
       <TaxBreakdown
-        salary={displaySalary()} // Show dynamically calculated salary
+        salary={displaySalary()}
         federalTax={taxData.federalTax}
         stateTax={taxData.stateTax}
         socialSecurity={taxData.socialSecurity}
@@ -279,6 +269,8 @@ const MapComponent = () => {
         netPay={taxData.netPay}
         marginalTaxRate={taxData.marginalTaxRate}
         averageTaxRate={taxData.averageTaxRate}
+        rothContribution={taxData.rothContribution}
+        preTax401k={taxData.preTax401k} // Show the pre-tax 401k contribution
       />
     </div>
   );
