@@ -159,19 +159,27 @@ const MapComponent = () => {
   const calculateFederalTax = (salary, frequency) => {
     // Approximate progressive federal tax brackets for 2023 (simplified)
     const brackets = [
-      { threshold: 10275, rate: 0.1 },
-      { threshold: 41775, rate: 0.12 },
-      { threshold: 89075, rate: 0.22 },
-      { threshold: 170050, rate: 0.24 },
-      { threshold: 215950, rate: 0.32 },
-      { threshold: 539900, rate: 0.35 },
-      { threshold: 999999999, rate: 0.37 },
+      { threshold: 11000, rate: 0.1 },
+      { threshold: 44725, rate: 0.12 },
+      { threshold: 95375, rate: 0.22 },
+      { threshold: 182100, rate: 0.24 },
+      { threshold: 231250, rate: 0.32 },
+      { threshold: 578100, rate: 0.35 },
+      { threshold: Infinity, rate: 0.37 }, // Use Infinity for the last bracket
     ];
-
+  
     let tax = 0;
     let lastThreshold = 0;
-    
-    // Loop through the tax brackets and apply the correct rate
+  
+    // Step 1: Calculate tax based on the **full annual salary**
+    console.log("Calculating tax for annual salary:", salary);
+  
+    // Make sure salary is treated as annual before starting calculation
+    if (frequency !== "annual") {
+      salary *= 12;  // Convert monthly, weekly, or bi-weekly to annual salary
+    }
+  
+    // Loop through the brackets to calculate the federal tax
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
         tax += (Math.min(salary, bracket.threshold) - lastThreshold) * bracket.rate;
@@ -180,33 +188,43 @@ const MapComponent = () => {
         break;
       }
     }
-
+  
     // Tax on the remaining income above the last threshold
     if (salary > lastThreshold) {
       tax += (salary - lastThreshold) * brackets[brackets.length - 1].rate;
     }
-
-    // If we're calculating for a frequency (monthly, weekly), adjust the tax for that frequency
+  
+    console.log("Federal Tax (Annual):", tax);
+  
+    // Step 2: Adjust the tax based on the selected frequency
+    let adjustedTax = tax; // Start with the calculated annual tax
+  
     switch (frequency) {
       case "monthly":
-        tax = tax / 12;
+        adjustedTax = adjustedTax / 12;  // Monthly withholding
+        console.log("Adjusted Federal Tax (Monthly):", adjustedTax);
         break;
       case "weekly":
-        tax = tax / 52;
+        adjustedTax = adjustedTax / 52;  // Weekly withholding
+        console.log("Adjusted Federal Tax (Weekly):", adjustedTax);
         break;
       case "bi-weekly":
-        tax = tax / 26;
+        adjustedTax = adjustedTax / 26;  // Bi-weekly withholding
+        console.log("Adjusted Federal Tax (Bi-weekly):", adjustedTax);
         break;
       case "hourly":
-        tax = tax / 2080;
+        adjustedTax = adjustedTax / 2080;  // Hourly withholding
+        console.log("Adjusted Federal Tax (Hourly):", adjustedTax);
         break;
       case "annual":
       default:
+        console.log("Adjusted Federal Tax (Annual):", adjustedTax);
         break;
     }
-
-    return tax;
-  };
+  
+    return adjustedTax;
+  };  
+  
 
   // Calculate and display the adjusted salary based on the selected frequency
   const displaySalary = () => {

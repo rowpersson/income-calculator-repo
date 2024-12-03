@@ -1,130 +1,136 @@
 import React from "react";
 
 const Form = ({
-  grossSalary,
-  handleSalaryChange,
-  frequency,
-  handleFrequencyChange,
-  selectedState,
-  handleDropdownChange,
-  geographies,
-  handleCalculateClick,
-}) => {
-  const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent form submission (page reload)
-    handleCalculateClick(); // Call the parent function
-  };
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: "100px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 2,
-        display: "flex",
-        gap: "10px",
-      }}
-    >
-      {/* Gross Salary Input */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <label htmlFor="grossSalary" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
-          Enter your annual gross income
-        </label>
-        <input
-          id="grossSalary"
-          type="text"
-          value={grossSalary}
-          onChange={handleSalaryChange}
-          placeholder="Gross Salary"
-          style={{
-            padding: "8px",
-            fontSize: "12px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            width: "150px",
-            textAlign: "center",
-          }}
-        />
-      </div>
-
-      {/* Frequency Dropdown */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <label htmlFor="frequency" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
-          Enter which breakdown you would like to see
-        </label>
-        <select
-          id="frequency"
-          value={frequency}
-          onChange={handleFrequencyChange}
-          style={{
-            padding: "8px",
-            fontSize: "12px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            width: "150px",
-            textAlign: "center",
-          }}
-        >
-          <option value="">Select Frequency</option>
-          <option value="annual">Annual</option>
-          <option value="monthly">Monthly</option>
-          <option value="weekly">Weekly</option>
-          <option value="bi-weekly">Bi-Weekly</option>
-          <option value="daily">Daily</option>
-          <option value="hourly">Hourly</option>
-        </select>
-      </div>
-
-      {/* State Dropdown + Calculate Button */}
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <label htmlFor="state" style={{ fontSize: "12px", marginBottom: "4px", marginLeft: "-5px" }}>
-            Choose a state
+    grossSalary,
+    handleSalaryChange,
+    frequency,
+    handleFrequencyChange,
+    selectedState,
+    handleDropdownChange,
+    geographies,
+    handleCalculateClick,
+  }) => {
+    const handleSubmit = (event) => {
+      event.preventDefault(); // Prevent form submission (page reload)
+      handleCalculateClick(); // Call the parent function
+    };
+  
+    const inputStyle = {
+      padding: "12px",
+      fontSize: "14px",
+      border: "1px solid #ccc",
+      borderRadius: "6px",
+      width: "160px",
+      textAlign: "center",
+      transition: "border-color 0.3s ease",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow effect
+      marginBottom: "10px", // Space below input fields
+    };
+  
+    const labelStyle = {
+      fontSize: "14px",
+      marginBottom: "5px",
+      color: "#333",
+    };
+  
+    const containerStyle = {
+      position: "absolute",
+      top: "100px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      zIndex: 2,
+      display: "flex",
+      justifyContent: "space-between", // Ensure space between the form elements
+      gap: "15px",
+    };
+  
+    const formGroupStyle = {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    };
+  
+    return (
+      <div style={containerStyle}>
+        {/* Gross Salary Input */}
+        <div style={formGroupStyle}>
+          <label htmlFor="grossSalary" style={labelStyle}>
+            Enter your annual gross income
+          </label>
+          <input
+            id="grossSalary"
+            type="number"
+            value={grossSalary}
+            onChange={handleSalaryChange}
+            placeholder="Gross Salary"
+            style={inputStyle}
+          />
+        </div>
+  
+        {/* Frequency Dropdown */}
+        <div style={formGroupStyle}>
+          <label htmlFor="frequency" style={labelStyle}>
+            Enter which breakdown you would like to see
           </label>
           <select
-            id="state"
-            value={selectedState || ""}
-            onChange={handleDropdownChange}
-            style={{
-              padding: "8px",
-              fontSize: "12px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              width: "150px",
-              textAlign: "center",
-            }}
+            id="frequency"
+            value={frequency}
+            onChange={handleFrequencyChange}
+            style={inputStyle}
           >
-            <option value="">Select a State</option>
-            {geographies.map((geo) => (
-              <option key={geo.id} value={geo.properties.name}>
-                {geo.properties.name}
-              </option>
-            ))}
+            <option value="">Select Frequency</option>
+            <option value="annual">Annual</option>
+            <option value="monthly">Monthly</option>
+            <option value="weekly">Weekly</option>
+            <option value="bi-weekly">Bi-Weekly</option>
+            <option value="daily">Daily</option>
+            <option value="hourly">Hourly</option>
           </select>
         </div>
-
-        {/* Calculate Button */}
-        <button
-          type="button"
-          onClick={handleSubmit}
-          style={{
-            padding: "8px 16px",
-            fontSize: "12px",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            transition: "background-color 0.3s",
-          }}
-        >
-          Calculate
-        </button>
+  
+        {/* State Dropdown + Calculate Button */}
+        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+          <div style={formGroupStyle}>
+            <label htmlFor="state" style={labelStyle}>
+              Choose a state
+            </label>
+            <select
+              id="state"
+              value={selectedState || ""}
+              onChange={handleDropdownChange}
+              style={inputStyle}
+            >
+              <option value="">Select a State</option>
+              {geographies.map((geo) => (
+                <option key={geo.id} value={geo.properties.name}>
+                  {geo.properties.name}
+                </option>
+              ))}
+            </select>
+          </div>
+  
+          {/* Calculate Button */}
+          <button
+            type="button"
+            onClick={handleSubmit}
+            style={{
+              padding: "12px 24px",
+              fontSize: "14px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              transition: "background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Shadow effect
+            }}
+          >
+            Calculate
+          </button>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+  
 
 export default Form;
