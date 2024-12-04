@@ -4,10 +4,10 @@ import TaxValue from "./TaxValue";
 
 // Helper function to format numbers with commas
 const formatNumber = (value) => {
-  if (typeof value === "number") {
-    return value.toLocaleString(); // Adds commas to numbers
+  if (typeof value === "number" && !isNaN(value)) {
+    return value.toLocaleString(); // Adds commas to numbers if valid
   }
-  return value; // If the value is not a number, return it as is
+  return "___"; // Fallback if the value is not a valid number
 };
 
 const TaxBreakdown = ({
@@ -23,6 +23,14 @@ const TaxBreakdown = ({
   rothContribution, // Add rothContribution prop
   preTax401k, // Add preTax401k prop
 }) => {
+  // Function to safely handle the tax rates and format them correctly
+  const formatPercentage = (value) => {
+    if (typeof value === "number" && !isNaN(value)) {
+      return value.toFixed(2) + "%"; // Only format if it's a valid number
+    }
+    return "___"; // Return a placeholder if the value is invalid or missing
+  };
+
   return (
     <div
       style={{
@@ -74,11 +82,11 @@ const TaxBreakdown = ({
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Marginal Tax Rate" />
-            <TaxValue value={marginalTaxRate.toFixed(2) + "%"} />
+            <TaxValue value={formatPercentage(marginalTaxRate)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Average Tax Rate" />
-            <TaxValue value={averageTaxRate.toFixed(2) + "%"} />
+            <TaxValue value={formatPercentage(averageTaxRate)} />
           </div>
           {/* Add Pre-tax 401k and Roth Contribution to the breakdown */}
           <div style={{ display: "flex", width: "100%" }}>

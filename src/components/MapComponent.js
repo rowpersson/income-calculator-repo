@@ -32,6 +32,7 @@ const MapComponent = () => {
   const [originalSalary, setOriginalSalary] = useState(null);
   const [k401Contribution, setK401kContribution] = useState(0); // Store the 401(k) contribution amount
   const [isRoth, setIsRoth] = useState(false); // Track if the 401(k) contribution is Roth or traditional
+  const [isCalculated, setIsCalculated] = useState(false); // Track if Calculate button has been clicked
 
   useEffect(() => {
     const fetchGeographies = async () => {
@@ -49,10 +50,11 @@ const MapComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (originalSalary) {
+    // Only run when calculate button is clicked
+    if (originalSalary && isCalculated) {
       calculateTaxBreakdown();
     }
-  }, [originalSalary, frequency, selectedState, k401Contribution, isRoth]); // Recalculate if 401k or Roth changes
+  }, [frequency, selectedState, k401Contribution, isRoth, isCalculated]); // Include isCalculated to trigger on button press
 
   const handleMouseEnter = (geo) => setHoveredState(geo.id);
   const handleMouseLeave = () => setHoveredState(null);
@@ -74,7 +76,8 @@ const MapComponent = () => {
   };
 
   const handleCalculateClick = () => {
-    calculateTaxBreakdown();
+    setOriginalSalary(grossSalary); // Only update original salary when calculate button is clicked
+    setIsCalculated(true); // Mark that the calculation has been triggered
   };
 
   const calculateStateTax = (salary, state) => {
@@ -267,16 +270,16 @@ const MapComponent = () => {
       {/* Tax Breakdown Section */}
       <TaxBreakdown
         salary={displaySalary()}
-        federalTax={taxData.federalTax}
-        stateTax={taxData.stateTax}
-        socialSecurity={taxData.socialSecurity}
-        medicare={taxData.medicare}
-        totalTax={taxData.totalTax}
-        netPay={taxData.netPay}
-        marginalTaxRate={taxData.marginalTaxRate}
-        averageTaxRate={taxData.averageTaxRate}
-        rothContribution={taxData.rothContribution}
-        preTax401k={taxData.preTax401k} // Show the pre-tax 401k contribution
+        federalTax={isCalculated ? taxData.federalTax : "___"}
+        stateTax={isCalculated ? taxData.stateTax : "___"}
+        socialSecurity={isCalculated ? taxData.socialSecurity : "___"}
+        medicare={isCalculated ? taxData.medicare : "___"}
+        totalTax={isCalculated ? taxData.totalTax : "___"}
+        netPay={isCalculated ? taxData.netPay : "___"}
+        marginalTaxRate={isCalculated ? taxData.marginalTaxRate : "___"}
+        averageTaxRate={isCalculated ? taxData.averageTaxRate : "___"}
+        rothContribution={isCalculated ? taxData.rothContribution : "___"}
+        preTax401k={isCalculated ? taxData.preTax401k : "___"} // Show the pre-tax 401k contribution
         style={{ marginTop: "20px", zIndex: 2 }} // Ensure tax breakdown is above map
       />
     </div>
