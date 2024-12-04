@@ -239,7 +239,8 @@ const MapComponent = () => {
   };
 
   return (
-    <div style={{ position: "relative", height: "80vh" }}>
+    <div style={{ display: "flex", flexDirection: "column", position: "relative", height: "80vh", padding: "10px" }}>
+      {/* Form Section */}
       <Form
         grossSalary={grossSalary}
         handleSalaryChange={handleSalaryChange}
@@ -251,14 +252,19 @@ const MapComponent = () => {
         handleCalculateClick={handleCalculateClick}
         handle401kChange={handle401kChange}
         handleRothChange={handleRothChange}
+        style={{ marginBottom: "20px", zIndex: 3 }} // Higher zIndex for form fields
       />
-      <Map
-        geoUrl={geoUrl}
-        hoveredState={hoveredState}
-        selectedState={selectedState}
-        handleMouseEnter={handleMouseEnter}
-        handleMouseLeave={handleMouseLeave}
-      />
+      {/* Map Section */}
+      <div style={{ flex: 1, height: "50vh", zIndex: 1, position: "relative" }}> {/* Map should take half the viewport height */}
+        <Map
+          geoUrl={geoUrl}
+          hoveredState={hoveredState}
+          selectedState={selectedState}
+          handleMouseEnter={handleMouseEnter}
+          handleMouseLeave={handleMouseLeave}
+        />
+      </div>
+      {/* Tax Breakdown Section */}
       <TaxBreakdown
         salary={displaySalary()}
         federalTax={taxData.federalTax}
@@ -271,6 +277,7 @@ const MapComponent = () => {
         averageTaxRate={taxData.averageTaxRate}
         rothContribution={taxData.rothContribution}
         preTax401k={taxData.preTax401k} // Show the pre-tax 401k contribution
+        style={{ marginTop: "20px", zIndex: 2 }} // Ensure tax breakdown is above map
       />
     </div>
   );

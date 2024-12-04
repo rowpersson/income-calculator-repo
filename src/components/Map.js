@@ -9,7 +9,12 @@ const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMous
       projectionConfig={{
         scale: 500,
       }}
-      style={{ position: "relative", zIndex: 1, top: "-120px" }}
+      style={{
+        position: "relative",
+        zIndex: 1,
+        top: "-750px",
+        marginLeft: "100px",
+    }}
     >
       <Geographies geography={geoUrl}>
         {({ geographies, outline, borders }) => (

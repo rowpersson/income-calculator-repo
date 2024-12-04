@@ -19,6 +19,7 @@ const Form = ({
         handleCalculateClick(); // Call the parent function to calculate the tax breakdown
     };
 
+    // Styles for form inputs and labels
     const inputStyle = {
         padding: "12px",
         fontSize: "14px",
@@ -29,6 +30,8 @@ const Form = ({
         transition: "border-color 0.3s ease",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow effect
         marginBottom: "10px", // Space below input fields
+        position: "relative", // Ensure form fields aren't obstructed
+        zIndex: 4, // Ensure input fields are above other elements
     };
 
     const labelStyle = {
@@ -37,32 +40,36 @@ const Form = ({
         color: "#333",
     };
 
-    const containerStyle = {
-        position: "absolute",
-        top: "100px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 2,
+    const formWrapperStyle = {
+        width: "300px", // Set a fixed width for the form box
+        padding: "20px",
+        backgroundColor: "#f9f9f9", // Light background color
+        borderRadius: "8px", // Rounded corners
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow effect
         display: "flex",
-        justifyContent: "space-between", // Ensure space between the form elements
-        gap: "15px",
+        flexDirection: "column", // Stack elements vertically
+        gap: "20px", // Space between form groups
+        position: "relative", // Ensure it's above other elements
+        zIndex: 10, // Make sure the form is in front of the map
     };
 
     const formGroupStyle = {
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "flex-start", // Align items to the start (left)
     };
 
     // Ensure geographies is an array before trying to map over it
-    const stateOptions = Array.isArray(geographies) ? geographies.map((geo) => (
-        <option key={geo.id} value={geo.properties.name}>
-            {geo.properties.name}
-        </option>
-    )) : [];
+    const stateOptions = Array.isArray(geographies)
+        ? geographies.map((geo) => (
+              <option key={geo.id} value={geo.properties.name}>
+                  {geo.properties.name}
+              </option>
+          ))
+        : [];
 
     return (
-        <div style={containerStyle}>
+        <div style={formWrapperStyle}>
             {/* Gross Salary Input */}
             <div style={formGroupStyle}>
                 <label htmlFor="grossSalary" style={labelStyle}>
@@ -81,7 +88,7 @@ const Form = ({
             {/* Frequency Dropdown */}
             <div style={formGroupStyle}>
                 <label htmlFor="frequency" style={labelStyle}>
-                    Enter which breakdown you would like to see
+                    Select frequency
                 </label>
                 <select
                     id="frequency"
@@ -131,7 +138,7 @@ const Form = ({
             </div>
 
             {/* State Dropdown + Calculate Button */}
-            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 <div style={formGroupStyle}>
                     <label htmlFor="state" style={labelStyle}>
                         Choose a state
