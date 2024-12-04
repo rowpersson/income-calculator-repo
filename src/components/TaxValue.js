@@ -12,7 +12,8 @@ const TaxValue = ({ value }) => {
         paddingRight: "200px", // Add some space between the value and the right edge
       }}
     >
-      {isPercentage ? formattedValue : `$${formattedValue}`} {/* Display without $ for percentages */}
+      {/* If the value is a percentage, display it without the dollar sign */}
+      {isPercentage ? formattedValue : `$${formattedValue}`} 
     </div>
   );
 };

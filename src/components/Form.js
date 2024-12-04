@@ -1,5 +1,16 @@
 import React from "react";
 
+// List of U.S. states (you can extend this list or load it from an external file)
+const U_S_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+  "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
+  "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
+  "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
+  "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+  "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
+  "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+];
+
 const Form = ({
     grossSalary,
     handleSalaryChange,
@@ -36,9 +47,10 @@ const Form = ({
     };
 
     const labelStyle = {
-        fontSize: "14px",
-        marginBottom: "5px",
-        color: "#333",
+        fontSize: "16px",    // Increase the font size
+        fontWeight: "bold",  // Make the label text bold
+        marginBottom: "8px", // Adjust the space below the label if needed
+        color: "black",      // Set the color to black
     };
 
     const formWrapperStyle = {
@@ -60,13 +72,17 @@ const Form = ({
         alignItems: "flex-start", // Align items to the start (left)
     };
 
-    // Ensure geographies is an array before trying to map over it
+    // Alphabetize and filter state options
     const stateOptions = Array.isArray(geographies)
-        ? geographies.map((geo) => (
-              <option key={geo.id} value={geo.properties.name}>
-                  {geo.properties.name}
-              </option>
-          ))
+        ? geographies
+            .map((geo) => geo.properties.name)
+            .filter((stateName) => U_S_STATES.includes(stateName)) // Filter out non-U.S. states
+            .sort() // Alphabetical sorting
+            .map((stateName, index) => (
+                <option key={index} value={stateName}>
+                    {stateName}
+                </option>
+            ))
         : [];
 
     return (
@@ -89,7 +105,7 @@ const Form = ({
             {/* Frequency Dropdown */}
             <div style={formGroupStyle}>
                 <label htmlFor="frequency" style={labelStyle}>
-                    Select frequency
+                    Select time period
                 </label>
                 <select
                     id="frequency"
@@ -97,7 +113,6 @@ const Form = ({
                     onChange={handleFrequencyChange}
                     style={inputStyle}
                 >
-                    <option value="">Select Frequency</option>
                     <option value="annual">Annual</option>
                     <option value="monthly">Monthly</option>
                     <option value="weekly">Weekly</option>

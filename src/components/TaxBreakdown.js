@@ -1,6 +1,7 @@
 import React from "react";
 import TaxLabel from "./TaxLabel";
 import TaxValue from "./TaxValue";
+import { federalTaxBreakdown, averageTaxRateDefinition } from "./TaxInfo";
 
 // Helper function to format numbers with commas
 const formatNumber = (value) => {
@@ -57,7 +58,7 @@ const TaxBreakdown = ({
             <TaxLabel label="Salary" />
             <TaxValue value={formatNumber(salary)} />
           </div>
-          
+
           {/* Horizontal Bar Under 401k deduction */}
           <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>          
           {/* Traditional 401k */}
@@ -122,7 +123,7 @@ const TaxBreakdown = ({
         </div>
       </div>
 
-      {/* Optional: Additional Component Box */}
+      {/* Additional Info Box */}
       <div
         style={{
           width: "48%",
@@ -134,7 +135,53 @@ const TaxBreakdown = ({
       >
         <h2 style={{ textAlign: "center" }}>Additional Info</h2>
         <div>
-          <p>Other related information can go here.</p>
+          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>Federal Tax Breakdown</h3>
+
+          {/* Tax Bracket Table */}
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              marginBottom: "20px",
+              backgroundColor: "#f4f4f4",
+              borderRadius: "8px",
+              overflow: "hidden", // Ensure rounded corners are respected
+            }}
+          >
+            <thead>
+              <tr
+                style={{
+                  backgroundColor: "#333333",
+                  color: "#fff",
+                  fontWeight: "bold",
+                }}
+              >
+                <th style={{ padding: "10px", textAlign: "left" }}>Income Range</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Tax Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {federalTaxBreakdown.map((item, index) => (
+                <tr
+                  key={index}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff", // Alternate row colors
+                  }}
+                >
+                  <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                    {item.range}
+                  </td>
+                  <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                    {item.rate}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Average Tax Rate Definition */}
+          <h3 style={{ fontSize: "16px", color: "#333" }}>Average Tax Rate Definition</h3>
+          <p style={{ fontSize: "14px", color: "#555" }}>{averageTaxRateDefinition}</p>
         </div>
       </div>
     </div>
