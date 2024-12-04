@@ -310,6 +310,10 @@ const calculateStateTax = (salary, state) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", position: "relative", height: "80vh", padding: "10px" }}>
+    {/* Title for Page */}
+    <h2 style={{ textAlign: "center", fontSize: "24px", marginBottom: "20px", fontWeight: "bold" }}>
+      United States Income Tax Calculator
+    </h2>      
       {/* Form Section */}
       <Form
         grossSalary={grossSalary}

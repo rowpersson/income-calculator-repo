@@ -135,6 +135,9 @@ const Form = ({
                     placeholder="401(k) Amount"
                     style={inputStyle}
                 />
+                <label htmlFor="contributionAmount" style={{ fontSize: "12px" }}>
+                    NOTE: the max 401k contribution amount for 2025 is $23,500 annually
+                </label>                
             </div>
 
             {/* 401(k) Contribution Type - Roth/Traditional */}
