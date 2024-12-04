@@ -137,6 +137,7 @@ const MapComponent = () => {
       tax += (salary - lastThreshold) * brackets[brackets.length - 1].rate;
     }
 
+
     let adjustedTax = tax;
     switch (frequency) {
       case "monthly":
@@ -164,46 +165,67 @@ const MapComponent = () => {
     if (isNaN(salary) || salary <= 0) {
       return; // Skip if salary is invalid or zero
     }
-
+  
     let adjustedSalary = salary;
     let annualSalary = salary; // Store the annual salary for tax calculations
-
-    // Subtract the 401(k) contribution if it's traditional (pre-tax)
-    if (!isRoth) {
-      adjustedSalary -= k401Contribution;
-    }
-
+  
+    // Adjust the 401(k) contribution based on frequency
+    let adjusted401kContribution = k401Contribution; // Default to the entered contribution amount
     switch (frequency) {
       case "monthly":
-        adjustedSalary = salary / 12;
+        adjusted401kContribution = k401Contribution / 12;
         break;
       case "weekly":
-        adjustedSalary = salary / 52;
+        adjusted401kContribution = k401Contribution / 52;
         break;
       case "bi-weekly":
-        adjustedSalary = salary / 26;
+        adjusted401kContribution = k401Contribution / 26;
         break;
       case "hourly":
-        adjustedSalary = salary / 2080;
+        adjusted401kContribution = k401Contribution / 2080;
         break;
       case "annual":
       default:
         break;
     }
-
+  
+    // Subtract the 401(k) contribution if it's traditional (pre-tax)
+    if (!isRoth) {
+      adjustedSalary -= adjusted401kContribution; // Reduce salary by adjusted 401(k) contribution (pre-tax)
+    }
+  
+    // Now adjust salary based on frequency (if monthly, weekly, etc.)
+    switch (frequency) {
+      case "monthly":
+        adjustedSalary = adjustedSalary / 12;
+        break;
+      case "weekly":
+        adjustedSalary = adjustedSalary / 52;
+        break;
+      case "bi-weekly":
+        adjustedSalary = adjustedSalary / 26;
+        break;
+      case "hourly":
+        adjustedSalary = adjustedSalary / 2080;
+        break;
+      case "annual":
+      default:
+        break;
+    }
+  
     // Calculate federal tax, state tax, social security, medicare
     const federalTax = calculateFederalTax(adjustedSalary, frequency);
     const stateTax = calculateStateTax(adjustedSalary, selectedState);
-
+  
     const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062);
     const medicare = adjustedSalary * 0.0145;
-
+  
     const totalTax = federalTax + stateTax + socialSecurity + medicare;
     const netPay = adjustedSalary - totalTax;
-
+  
     const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
     const averageTaxRate = totalTax / adjustedSalary * 100;
-
+  
     // Update tax data state with Roth contribution and pre-tax 401(k)
     setTaxData({
       salary: annualSalary,
@@ -215,10 +237,12 @@ const MapComponent = () => {
       netPay,
       marginalTaxRate,
       averageTaxRate,
-      rothContribution: isRoth ? k401Contribution : 0, // Only track Roth contributions if applicable
-      preTax401k: isRoth ? 0 : k401Contribution, // Only track pre-tax contributions if it's a traditional 401k
+      rothContribution: isRoth ? adjusted401kContribution : 0, // Adjusted Roth contribution (post-tax)
+      preTax401k: isRoth ? 0 : adjusted401kContribution, // Adjusted pre-tax contribution (pre-tax)
     });
   };
+  
+  
 
   const displaySalary = () => {
     let salary = parseFloat(grossSalary);
@@ -241,6 +265,10 @@ const MapComponent = () => {
     }
   };
 
+  const handleContributionTypeChange = (event) => {
+    setIsRoth(event.target.value === "roth"); // Set isRoth to true if Roth is selected
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", position: "relative", height: "80vh", padding: "10px" }}>
       {/* Form Section */}
@@ -253,8 +281,11 @@ const MapComponent = () => {
         handleDropdownChange={handleDropdownChange}
         geographies={geographies}
         handleCalculateClick={handleCalculateClick}
+        k401Contribution={k401Contribution}
         handle401kChange={handle401kChange}
         handleRothChange={handleRothChange}
+        contributionType={isRoth ? "roth" : "traditional"}
+        handleContributionTypeChange={handleContributionTypeChange}
         style={{ marginBottom: "20px", zIndex: 3 }} // Higher zIndex for form fields
       />
       {/* Map Section */}

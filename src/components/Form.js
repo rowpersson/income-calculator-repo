@@ -9,10 +9,11 @@ const Form = ({
     handleDropdownChange,
     geographies,
     handleCalculateClick,
-    contributionAmount,
-    handleContributionChange,
+    k401Contribution,
+    handle401kChange,
     contributionType,
-    handleContributionTypeChange
+    handleContributionTypeChange,  // handle Roth/Traditional change
+    handleRothChange,  // handle Roth toggle
 }) => {
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent form submission (page reload)
@@ -114,27 +115,40 @@ const Form = ({
                 <input
                     id="contributionAmount"
                     type="number"
-                    value={contributionAmount}
-                    onChange={handleContributionChange} // Update contribution amount in parent
+                    value={k401Contribution}
+                    onChange={handle401kChange} // Update contribution amount in parent
                     placeholder="401(k) Amount"
                     style={inputStyle}
                 />
             </div>
 
-            {/* 401(k) Contribution Type */}
+            {/* 401(k) Contribution Type - Roth/Traditional */}
             <div style={formGroupStyle}>
                 <label htmlFor="contributionType" style={labelStyle}>
                     Select your 401(k) type
                 </label>
-                <select
-                    id="contributionType"
-                    value={contributionType}
-                    onChange={handleContributionTypeChange} // Update contribution type in parent
-                    style={inputStyle}
-                >
-                    <option value="traditional">Traditional (Pre-tax)</option>
-                    <option value="roth">Roth (Post-tax)</option>
-                </select>
+                <div>
+                    <label>
+                        <input
+                            type="radio"
+                            name="contributionType"
+                            value="traditional"
+                            checked={contributionType === "traditional"}
+                            onChange={handleContributionTypeChange}
+                        />
+                        Traditional (Pre-tax)
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="contributionType"
+                            value="roth"
+                            checked={contributionType === "roth"}
+                            onChange={handleContributionTypeChange}
+                        />
+                        Roth (Post-tax)
+                    </label>
+                </div>
             </div>
 
             {/* State Dropdown + Calculate Button */}
