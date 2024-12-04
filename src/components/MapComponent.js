@@ -23,7 +23,6 @@ const MapComponent = () => {
     medicare: 0,
     totalTax: 0,
     netPay: 0,
-    marginalTaxRate: 0,
     averageTaxRate: 0,
     rothContribution: 0, // Track Roth contribution separately
     preTax401k: 0, // Track Pre-tax 401(k) contribution
@@ -80,31 +79,32 @@ const MapComponent = () => {
     setIsCalculated(true); // Mark that the calculation has been triggered
   };
 
-  const calculateStateTax = (salary, state) => {
-    const brackets = stateTaxRates[state];
-  
-    if (!brackets) {
-      return 0; // No tax if the state doesn't have income tax (e.g., Texas, Florida, etc.)
+ // Calculate State Tax (only the display should adjust for frequency)
+const calculateStateTax = (salary, state) => {
+  const brackets = stateTaxRates[state];
+
+  if (!brackets) {
+    return 0; // No tax if the state doesn't have income tax
+  }
+
+  let tax = 0;
+  let lastThreshold = 0;
+
+  for (const bracket of brackets) {
+    if (salary > bracket.threshold) {
+      tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
+      lastThreshold = bracket.threshold;
+    } else {
+      break;
     }
-  
-    let tax = 0;
-    let lastThreshold = 0;
-  
-    for (const bracket of brackets) {
-      if (salary > bracket.threshold) {
-        tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
-        lastThreshold = bracket.threshold;
-      } else {
-        break;
-      }
-    }
-  
-    if (salary > lastThreshold) {
-      tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
-    }
-  
-    return tax;
-  };
+  }
+
+  if (salary > lastThreshold) {
+    tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
+  }
+
+  return tax;
+};
   
 
   const calculateFederalTax = (salary, frequency) => {
@@ -117,29 +117,25 @@ const MapComponent = () => {
       { threshold: 578100, rate: 0.35 },
       { threshold: Infinity, rate: 0.37 },
     ];
-
+  
     let tax = 0;
     let lastThreshold = 0;
-
-    if (frequency !== "annual") {
-      salary *= 12; // Convert monthly, weekly, or bi-weekly to annual salary
-    }
-
+  
+    // Apply taxes progressively based on the salary within each tax bracket
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
-        tax += (Math.min(salary, bracket.threshold) - lastThreshold) * bracket.rate;
+        tax += (bracket.threshold - lastThreshold) * bracket.rate;
         lastThreshold = bracket.threshold;
       } else {
+        tax += (salary - lastThreshold) * bracket.rate;
         break;
       }
     }
-
-    if (salary > lastThreshold) {
-      tax += (salary - lastThreshold) * brackets[brackets.length - 1].rate;
-    }
-
-
+  
+    // Don't adjust the salary here, only adjust final tax display based on frequency
     let adjustedTax = tax;
+  
+    // Adjust the tax based on the selected frequency
     switch (frequency) {
       case "monthly":
         adjustedTax = adjustedTax / 12;
@@ -157,7 +153,7 @@ const MapComponent = () => {
       default:
         break;
     }
-
+  
     return adjustedTax;
   };
 
@@ -210,8 +206,7 @@ const MapComponent = () => {
     // Net pay is the adjusted salary minus the total tax
     const netPay = adjustedSalary - totalTax;
   
-    // Marginal and average tax rates
-    const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
+    // Average tax rate
     const averageTaxRate = totalTax / adjustedSalary * 100;
   
     // Now adjust for frequency for display purposes
@@ -275,7 +270,6 @@ const MapComponent = () => {
       medicare: displayMedicare,
       totalTax: displayTotalTax,
       netPay: displayNetPay,
-      marginalTaxRate,
       averageTaxRate,
       rothContribution: isRoth ? adjusted401kContribution : 0, // Roth contributions are not pre-tax
       preTax401k: isRoth ? 0 : adjusted401kContribution, // Only track pre-tax 401(k) if it's traditional
@@ -346,11 +340,10 @@ const MapComponent = () => {
         socialSecurity={isCalculated ? taxData.socialSecurity : "___"}
         medicare={isCalculated ? taxData.medicare : "___"}
         totalTax={isCalculated ? taxData.totalTax : "___"}
-        netPay={isCalculated ? taxData.netPay : "___"}
-        marginalTaxRate={isCalculated ? taxData.marginalTaxRate : "___"}
-        averageTaxRate={isCalculated ? taxData.averageTaxRate : "___"}
         rothContribution={isCalculated ? taxData.rothContribution : "___"}
-        preTax401k={isCalculated ? taxData.preTax401k : "___"} // Show the pre-tax 401k contribution
+        preTax401k={isCalculated ? taxData.preTax401k : "___"} // Show the pre-tax 401k contribution        
+        netPay={isCalculated ? taxData.netPay : "___"}
+        averageTaxRate={isCalculated ? taxData.averageTaxRate : "___"}
         style={{ marginTop: "20px", zIndex: 2 }} // Ensure tax breakdown is above map
       />
     </div>

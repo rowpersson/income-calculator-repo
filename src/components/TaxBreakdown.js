@@ -18,7 +18,6 @@ const TaxBreakdown = ({
   medicare,
   totalTax,
   netPay,
-  marginalTaxRate,
   averageTaxRate,
   rothContribution, // Add rothContribution prop
   preTax401k, // Add preTax401k prop
@@ -48,71 +47,90 @@ const TaxBreakdown = ({
           padding: "20px",
           border: "1px solid #ccc",
           borderRadius: "8px",
+          backgroundColor: "#f9f9f9",
         }}
       >
-        <h2 style={{ textAlign: "center" }}>Withholding</h2>
+        <h2 style={{ textAlign: "center" }}>Withholding Breakdown</h2>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-          <div style={{ display: "flex", width: "100%" }}>
+          {/* Salary */}
+          <div style={{ display: "flex", width: "100%", fontWeight: "bold" }}>
             <TaxLabel label="Salary" />
             <TaxValue value={formatNumber(salary)} />
           </div>
+
+          {/* Horizontal Bar Under Salary */}
+          <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>
+
+          {/* Taxes */}
           <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="Federal Income Tax" />
+            <TaxLabel label="- Federal Income Tax" />
             <TaxValue value={formatNumber(federalTax)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="State Income Tax" />
+            <TaxLabel label="- State Income Tax" />
             <TaxValue value={formatNumber(stateTax)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="Social Security" />
+            <TaxLabel label="- Social Security" />
             <TaxValue value={formatNumber(socialSecurity)} />
           </div>
           <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="Medicare" />
+            <TaxLabel label="- Medicare" />
             <TaxValue value={formatNumber(medicare)} />
           </div>
-          <div style={{ display: "flex", width: "100%" }}>
+
+          {/* Horizontal Bar Above Total Tax */}
+          <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>
+
+          {/* Total Tax */}
+          <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
             <TaxLabel label="Total Tax" />
             <TaxValue value={formatNumber(totalTax)} />
           </div>
+
+          {/* Horizontal Bar After Total Tax */}
+          <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>
+
+          {/* 401k Contributions */}
           <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="- 401k Contribution (Pre-tax)" />
+            <TaxValue value={formatNumber(preTax401k)} />
+          </div>
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="- 401k Contribution (Roth)" />
+            <TaxValue value={formatNumber(rothContribution)} />
+          </div>
+
+          {/* Horizontal Bar After 401k */}
+          <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>
+
+          {/* Net Pay */}
+          <div style={{ display: "flex", width: "100%", fontWeight: "bold" }}>
             <TaxLabel label="Net Pay" />
             <TaxValue value={formatNumber(netPay)} />
           </div>
-          <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="Marginal Tax Rate" />
-            <TaxValue value={formatPercentage(marginalTaxRate)} />
-          </div>
+
+          {/* Tax Rates */}
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="Average Tax Rate" />
             <TaxValue value={formatPercentage(averageTaxRate)} />
           </div>
-          {/* Add Pre-tax 401k and Roth Contribution to the breakdown */}
-          <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="401k Contribution (Pre-tax)" />
-            <TaxValue value={formatNumber(preTax401k)} />
-          </div>
-          <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="401k Contribution (Roth)" />
-            <TaxValue value={formatNumber(rothContribution)} />
-          </div>
         </div>
       </div>
 
-      {/* Another Component Box */}
+      {/* Optional: Additional Component Box */}
       <div
         style={{
           width: "48%",
           padding: "20px",
           border: "1px solid #ccc",
           borderRadius: "8px",
+          backgroundColor: "#f9f9f9",
         }}
       >
-        <h2 style={{ textAlign: "center" }}>Another Component</h2>
+        <h2 style={{ textAlign: "center" }}>Additional Info</h2>
         <div>
-          {/* Add content for another box here */}
-          <p>Content for another box can go here.</p>
+          <p>Other related information can go here.</p>
         </div>
       </div>
     </div>
