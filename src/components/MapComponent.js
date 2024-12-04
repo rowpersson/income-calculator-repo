@@ -82,14 +82,14 @@ const MapComponent = () => {
 
   const calculateStateTax = (salary, state) => {
     const brackets = stateTaxRates[state];
-
+  
     if (!brackets) {
       return 0; // No tax if the state doesn't have income tax (e.g., Texas, Florida, etc.)
     }
-
+  
     let tax = 0;
     let lastThreshold = 0;
-
+  
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
         tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
@@ -98,13 +98,14 @@ const MapComponent = () => {
         break;
       }
     }
-
+  
     if (salary > lastThreshold) {
       tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
     }
-
+  
     return tax;
   };
+  
 
   const calculateFederalTax = (salary, frequency) => {
     const brackets = [
@@ -166,8 +167,9 @@ const MapComponent = () => {
       return; // Skip if salary is invalid or zero
     }
   
-    let adjustedSalary = salary;
-    let annualSalary = salary; // Store the annual salary for tax calculations
+    // Store the original salary for tax calculations (always annual)
+    let annualSalary = salary;
+    let adjustedSalary = salary; // This is where we will adjust for the 401(k)
   
     // Adjust the 401(k) contribution based on frequency
     let adjusted401kContribution = k401Contribution; // Default to the entered contribution amount
@@ -189,58 +191,96 @@ const MapComponent = () => {
         break;
     }
   
-    // Subtract the 401(k) contribution if it's traditional (pre-tax)
+    // Subtract the full 401(k) contribution (annual) from the salary if it's traditional
     if (!isRoth) {
-      adjustedSalary -= adjusted401kContribution; // Reduce salary by adjusted 401(k) contribution (pre-tax)
+      adjustedSalary -= k401Contribution; // Adjust salary by the full 401(k) contribution
     }
   
-    // Now adjust salary based on frequency (if monthly, weekly, etc.)
+    // Calculate the federal and state tax based on the adjusted annual salary (after 401(k) contribution)
+    const federalTax = calculateFederalTax(adjustedSalary, "annual"); // Always calculate as annual
+    const stateTax = calculateStateTax(adjustedSalary, selectedState); // Always calculate as annual
+  
+    // Calculate Social Security and Medicare taxes based on the adjusted annual salary
+    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062); // 6.2% Social Security Tax (max salary limit)
+    const medicare = adjustedSalary * 0.0145; // 1.45% Medicare Tax
+  
+    // Total tax is the sum of federal, state, Social Security, and Medicare taxes
+    const totalTax = federalTax + stateTax + socialSecurity + medicare;
+  
+    // Net pay is the adjusted salary minus the total tax
+    const netPay = adjustedSalary - totalTax;
+  
+    // Marginal and average tax rates
+    const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
+    const averageTaxRate = totalTax / adjustedSalary * 100;
+  
+    // Now adjust for frequency for display purposes
+    let displaySalary = annualSalary;
+    let displayFederalTax = federalTax;
+    let displayStateTax = stateTax;
+    let displaySocialSecurity = socialSecurity;
+    let displayMedicare = medicare;
+    let displayTotalTax = totalTax;
+    let displayNetPay = netPay;
+  
+    // Adjust the per-period (monthly, weekly, etc.) values for display
     switch (frequency) {
       case "monthly":
-        adjustedSalary = adjustedSalary / 12;
+        displaySalary = annualSalary / 12;
+        displayFederalTax = federalTax / 12;
+        displayStateTax = stateTax / 12;
+        displaySocialSecurity = socialSecurity / 12;
+        displayMedicare = medicare / 12;
+        displayTotalTax = totalTax / 12;
+        displayNetPay = netPay / 12;
         break;
       case "weekly":
-        adjustedSalary = adjustedSalary / 52;
+        displaySalary = annualSalary / 52;
+        displayFederalTax = federalTax / 52;
+        displayStateTax = stateTax / 52;
+        displaySocialSecurity = socialSecurity / 52;
+        displayMedicare = medicare / 52;
+        displayTotalTax = totalTax / 52;
+        displayNetPay = netPay / 52;
         break;
       case "bi-weekly":
-        adjustedSalary = adjustedSalary / 26;
+        displaySalary = annualSalary / 26;
+        displayFederalTax = federalTax / 26;
+        displayStateTax = stateTax / 26;
+        displaySocialSecurity = socialSecurity / 26;
+        displayMedicare = medicare / 26;
+        displayTotalTax = totalTax / 26;
+        displayNetPay = netPay / 26;
         break;
       case "hourly":
-        adjustedSalary = adjustedSalary / 2080;
+        displaySalary = annualSalary / 2080; // 2080 hours in a year
+        displayFederalTax = federalTax / 2080;
+        displayStateTax = stateTax / 2080;
+        displaySocialSecurity = socialSecurity / 2080;
+        displayMedicare = medicare / 2080;
+        displayTotalTax = totalTax / 2080;
+        displayNetPay = netPay / 2080;
         break;
       case "annual":
       default:
         break;
     }
   
-    // Calculate federal tax, state tax, social security, medicare
-    const federalTax = calculateFederalTax(adjustedSalary, frequency);
-    const stateTax = calculateStateTax(adjustedSalary, selectedState);
-  
-    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062);
-    const medicare = adjustedSalary * 0.0145;
-  
-    const totalTax = federalTax + stateTax + socialSecurity + medicare;
-    const netPay = adjustedSalary - totalTax;
-  
-    const marginalTaxRate = (federalTax + stateTax) / adjustedSalary * 100;
-    const averageTaxRate = totalTax / adjustedSalary * 100;
-  
-    // Update tax data state with Roth contribution and pre-tax 401(k)
+    // Update tax data state with the calculated values
     setTaxData({
-      salary: annualSalary,
-      federalTax,
-      stateTax,
-      socialSecurity,
-      medicare,
-      totalTax,
-      netPay,
+      salary: displaySalary,
+      federalTax: displayFederalTax,
+      stateTax: displayStateTax,
+      socialSecurity: displaySocialSecurity,
+      medicare: displayMedicare,
+      totalTax: displayTotalTax,
+      netPay: displayNetPay,
       marginalTaxRate,
       averageTaxRate,
-      rothContribution: isRoth ? adjusted401kContribution : 0, // Adjusted Roth contribution (post-tax)
-      preTax401k: isRoth ? 0 : adjusted401kContribution, // Adjusted pre-tax contribution (pre-tax)
+      rothContribution: isRoth ? adjusted401kContribution : 0, // Roth contributions are not pre-tax
+      preTax401k: isRoth ? 0 : adjusted401kContribution, // Only track pre-tax 401(k) if it's traditional
     });
-  };
+  };  
   
   
 
