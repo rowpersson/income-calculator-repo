@@ -187,9 +187,9 @@ const calculateStateTax = (salary, state) => {
         break;
     }
   
-    // Subtract the full 401(k) contribution (annual) from the salary if it's traditional
+    // Subtract the **Traditional** 401(k) contribution (if it's pre-tax)
     if (!isRoth) {
-      adjustedSalary -= k401Contribution; // Adjust salary by the full 401(k) contribution
+      adjustedSalary -= k401Contribution; // Adjust salary by the full 401(k) contribution if it's traditional
     }
   
     // Calculate the federal and state tax based on the adjusted annual salary (after 401(k) contribution)
@@ -204,7 +204,12 @@ const calculateStateTax = (salary, state) => {
     const totalTax = federalTax + stateTax + socialSecurity + medicare;
   
     // Net pay is the adjusted salary minus the total tax
-    const netPay = adjustedSalary - totalTax;
+    let netPay = adjustedSalary - totalTax;
+  
+    // Subtract Roth 401(k) contribution from the net pay (because Roth is post-tax)
+    if (isRoth) {
+      netPay -= k401Contribution;
+    }
   
     // Average tax rate
     const averageTaxRate = totalTax / adjustedSalary * 100;
@@ -271,10 +276,10 @@ const calculateStateTax = (salary, state) => {
       totalTax: displayTotalTax,
       netPay: displayNetPay,
       averageTaxRate,
-      rothContribution: isRoth ? adjusted401kContribution : 0, // Roth contributions are not pre-tax
+      rothContribution: isRoth ? adjusted401kContribution : 0, // Roth contributions are not pre-tax, so we track separately
       preTax401k: isRoth ? 0 : adjusted401kContribution, // Only track pre-tax 401(k) if it's traditional
     });
-  };  
+  };    
   
   
 

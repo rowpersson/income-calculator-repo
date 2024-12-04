@@ -57,8 +57,16 @@ const TaxBreakdown = ({
             <TaxLabel label="Salary" />
             <TaxValue value={formatNumber(salary)} />
           </div>
+          
+          {/* Horizontal Bar Under 401k deduction */}
+          <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>          
+          {/* Traditional 401k */}
+          <div style={{ display: "flex", width: "100%" }}>
+            <TaxLabel label="- 401k Contribution (Pre-tax)" />
+            <TaxValue value={formatNumber(preTax401k)} />
+          </div>
 
-          {/* Horizontal Bar Under Salary */}
+          {/* Horizontal Bar Under 401k deduction */}
           <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>
 
           {/* Taxes */}
@@ -92,10 +100,6 @@ const TaxBreakdown = ({
           <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>
 
           {/* 401k Contributions */}
-          <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="- 401k Contribution (Pre-tax)" />
-            <TaxValue value={formatNumber(preTax401k)} />
-          </div>
           <div style={{ display: "flex", width: "100%" }}>
             <TaxLabel label="- 401k Contribution (Roth)" />
             <TaxValue value={formatNumber(rothContribution)} />
