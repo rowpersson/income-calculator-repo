@@ -39,7 +39,7 @@ const MapComponent = () => {
         const response = await fetch(geoUrl);
         const data = await response.json();
         setGeographies(data.objects.states.geometries);
-        setIsLoading(false);
+        setIsLoading(false); // Set loading to false once data is fetched
       } catch (error) {
         console.error("Error loading map data:", error);
         setIsLoading(false);
@@ -48,18 +48,21 @@ const MapComponent = () => {
     fetchGeographies();
   }, []);
 
-  useEffect(() => {
-    // Only run when calculate button is clicked
-    if (originalSalary && isCalculated) {
-      calculateTaxBreakdown();
-    }
-  }, [
-    frequency,
-    selectedState,
-    k401Contribution,
-    isRoth,
-    isCalculated,
-    originalSalary]); // Include isCalculated to trigger on button press
+/* eslint-disable react-hooks/exhaustive-deps */
+useEffect(() => {
+  // Only run when calculate button is clicked
+  if (originalSalary && isCalculated) {
+    calculateTaxBreakdown();
+  }
+}, [
+  frequency,
+  selectedState,
+  k401Contribution,
+  isRoth,
+  isCalculated,
+  originalSalary,
+]); // Include necessary dependencies
+/* eslint-enable react-hooks/exhaustive-deps */
 
   const handleMouseEnter = (geo) => setHoveredState(geo.id);
   const handleMouseLeave = () => setHoveredState(null);
@@ -68,50 +71,35 @@ const MapComponent = () => {
     setGrossSalary(event.target.value);
     setOriginalSalary(event.target.value); // Save the original salary when it changes
   };
-  const handleFrequencyChange = (event) => {
-    setFrequency(event.target.value);
-  };
-
-  const handle401kChange = (event) => {
-    setK401kContribution(parseFloat(event.target.value) || 0); // Handle 401k contribution change
-  };
-
-  const handleRothChange = (event) => {
-    setIsRoth(event.target.checked); // Handle Roth 401k toggle
-  };
-
+  const handleFrequencyChange = (event) => setFrequency(event.target.value);
+  const handle401kChange = (event) => setK401kContribution(parseFloat(event.target.value) || 0);
+  const handleRothChange = (event) => setIsRoth(event.target.checked);
   const handleCalculateClick = () => {
     setOriginalSalary(grossSalary); // Only update original salary when calculate button is clicked
     setIsCalculated(true); // Mark that the calculation has been triggered
   };
 
- // Calculate State Tax (only the display should adjust for frequency)
-const calculateStateTax = (salary, state) => {
-  const brackets = stateTaxRates[state];
-
-  if (!brackets) {
-    return 0; // No tax if the state doesn't have income tax
-  }
-
-  let tax = 0;
-  let lastThreshold = 0;
-
-  for (const bracket of brackets) {
-    if (salary > bracket.threshold) {
-      tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
-      lastThreshold = bracket.threshold;
-    } else {
-      break;
+  // Tax calculation functions
+  const calculateStateTax = (salary, state) => {
+    const brackets = stateTaxRates[state];
+    if (!brackets) {
+      return 0; // No tax if the state doesn't have income tax
     }
-  }
-
-  if (salary > lastThreshold) {
-    tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
-  }
-
-  return tax;
-};
-  
+    let tax = 0;
+    let lastThreshold = 0;
+    for (const bracket of brackets) {
+      if (salary > bracket.threshold) {
+        tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
+        lastThreshold = bracket.threshold;
+      } else {
+        break;
+      }
+    }
+    if (salary > lastThreshold) {
+      tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
+    }
+    return tax;
+  };
 
   const calculateFederalTax = (salary, frequency) => {
     const brackets = [
@@ -123,11 +111,8 @@ const calculateStateTax = (salary, state) => {
       { threshold: 578100, rate: 0.35 },
       { threshold: Infinity, rate: 0.37 },
     ];
-  
     let tax = 0;
     let lastThreshold = 0;
-  
-    // Apply taxes progressively based on the salary within each tax bracket
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
         tax += (bracket.threshold - lastThreshold) * bracket.rate;
@@ -137,11 +122,7 @@ const calculateStateTax = (salary, state) => {
         break;
       }
     }
-  
-    // Don't adjust the salary here, only adjust final tax display based on frequency
     let adjustedTax = tax;
-  
-    // Adjust the tax based on the selected frequency
     switch (frequency) {
       case "monthly":
         adjustedTax = adjustedTax / 12;
@@ -159,22 +140,20 @@ const calculateStateTax = (salary, state) => {
       default:
         break;
     }
-  
     return adjustedTax;
   };
 
+  // Define calculateTaxBreakdown outside useEffect to avoid the use-before-define warning
   const calculateTaxBreakdown = () => {
     let salary = parseFloat(grossSalary);
     if (isNaN(salary) || salary <= 0) {
       return; // Skip if salary is invalid or zero
     }
-  
-    // Store the original salary for tax calculations (always annual)
+
     let annualSalary = salary;
-    let adjustedSalary = salary; // This is where we will adjust for the 401(k)
-  
-    // Adjust the 401(k) contribution based on frequency
-    let adjusted401kContribution = k401Contribution; // Default to the entered contribution amount
+    let adjustedSalary = salary;
+    let adjusted401kContribution = k401Contribution;
+
     switch (frequency) {
       case "monthly":
         adjusted401kContribution = k401Contribution / 12;
@@ -192,35 +171,23 @@ const calculateStateTax = (salary, state) => {
       default:
         break;
     }
-  
-    // Subtract the **Traditional** 401(k) contribution (if it's pre-tax)
+
     if (!isRoth) {
-      adjustedSalary -= k401Contribution; // Adjust salary by the full 401(k) contribution if it's traditional
+      adjustedSalary -= k401Contribution;
     }
-  
-    // Calculate the federal and state tax based on the adjusted annual salary (after 401(k) contribution)
-    const federalTax = calculateFederalTax(adjustedSalary, "annual"); // Always calculate as annual
-    const stateTax = calculateStateTax(adjustedSalary, selectedState); // Always calculate as annual
-  
-    // Calculate Social Security and Medicare taxes based on the adjusted annual salary
-    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062); // 6.2% Social Security Tax (max salary limit)
-    const medicare = adjustedSalary * 0.0145; // 1.45% Medicare Tax
-  
-    // Total tax is the sum of federal, state, Social Security, and Medicare taxes
+
+    const federalTax = calculateFederalTax(adjustedSalary, "annual");
+    const stateTax = calculateStateTax(adjustedSalary, selectedState);
+    const socialSecurity = Math.min(adjustedSalary * 0.062, 160200 * 0.062);
+    const medicare = adjustedSalary * 0.0145;
     const totalTax = federalTax + stateTax + socialSecurity + medicare;
-  
-    // Net pay is the adjusted salary minus the total tax
     let netPay = adjustedSalary - totalTax;
-  
-    // Subtract Roth 401(k) contribution from the net pay (because Roth is post-tax)
     if (isRoth) {
       netPay -= k401Contribution;
     }
-  
-    // Average tax rate
+
     const averageTaxRate = totalTax / adjustedSalary * 100;
-  
-    // Now adjust for frequency for display purposes
+
     let displaySalary = annualSalary;
     let displayFederalTax = federalTax;
     let displayStateTax = stateTax;
@@ -228,8 +195,7 @@ const calculateStateTax = (salary, state) => {
     let displayMedicare = medicare;
     let displayTotalTax = totalTax;
     let displayNetPay = netPay;
-  
-    // Adjust the per-period (monthly, weekly, etc.) values for display
+
     switch (frequency) {
       case "monthly":
         displaySalary = annualSalary / 12;
@@ -259,7 +225,7 @@ const calculateStateTax = (salary, state) => {
         displayNetPay = netPay / 26;
         break;
       case "hourly":
-        displaySalary = annualSalary / 2080; // 2080 hours in a year
+        displaySalary = annualSalary / 2080;
         displayFederalTax = federalTax / 2080;
         displayStateTax = stateTax / 2080;
         displaySocialSecurity = socialSecurity / 2080;
@@ -271,8 +237,7 @@ const calculateStateTax = (salary, state) => {
       default:
         break;
     }
-  
-    // Update tax data state with the calculated values
+
     setTaxData({
       salary: displaySalary,
       federalTax: displayFederalTax,
@@ -282,19 +247,16 @@ const calculateStateTax = (salary, state) => {
       totalTax: displayTotalTax,
       netPay: displayNetPay,
       averageTaxRate,
-      rothContribution: isRoth ? adjusted401kContribution : 0, // Roth contributions are not pre-tax, so we track separately
-      preTax401k: isRoth ? 0 : adjusted401kContribution, // Only track pre-tax 401(k) if it's traditional
+      rothContribution: isRoth ? adjusted401kContribution : 0,
+      preTax401k: isRoth ? 0 : adjusted401kContribution,
     });
-  };    
-  
-  
+  };
 
   const displaySalary = () => {
     let salary = parseFloat(grossSalary);
     if (isNaN(salary) || salary <= 0) {
-      return 0; // If salary is invalid, show 0
+      return 0;
     }
-
     switch (frequency) {
       case "monthly":
         return salary / 12;
@@ -316,14 +278,14 @@ const calculateStateTax = (salary, state) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", position: "relative", height: "80vh", padding: "10px" }}>
-    {/* Title for Page */}
-    <h2 style={{ textAlign: "center", fontSize: "24px", marginBottom: "5px", fontWeight: "bold" }}>
-      United States Income Tax Calculator
-    </h2>      
-    {/* Sub-title */}
-    <h2 style={{ textAlign: "center", fontSize: "14px", marginBottom: "0px", fontWeight: "bold" }}>
-      Hello! Please enter your information and press "calculate" to see your tax withholding information.
-    </h2>  
+      {/* Title for Page */}
+      <h2 style={{ textAlign: "center", fontSize: "24px", marginBottom: "5px", fontWeight: "bold" }}>
+        United States Income Tax Calculator
+      </h2>
+      {/* Sub-title */}
+      <h2 style={{ textAlign: "center", fontSize: "14px", marginBottom: "0px", fontWeight: "bold" }}>
+        Hello! Please enter your information and press "calculate" to see your tax withholding information.
+      </h2>
       {/* Form Section */}
       <Form
         grossSalary={grossSalary}
@@ -343,13 +305,17 @@ const calculateStateTax = (salary, state) => {
       />
       {/* Map Section */}
       <div style={{ flex: 1, height: "50vh", zIndex: 1, position: "relative" }}> {/* Map should take half the viewport height */}
-        <Map
-          geoUrl={geoUrl}
-          hoveredState={hoveredState}
-          selectedState={selectedState}
-          handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={handleMouseLeave}
-        />
+        {isLoading ? (
+          <div>Loading map...</div>
+        ) : (
+          <Map
+            geoUrl={geoUrl}
+            hoveredState={hoveredState}
+            selectedState={selectedState}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
+          />
+        )}
       </div>
       {/* Tax Breakdown Section */}
       <TaxBreakdown
@@ -360,7 +326,7 @@ const calculateStateTax = (salary, state) => {
         medicare={isCalculated ? taxData.medicare : "___"}
         totalTax={isCalculated ? taxData.totalTax : "___"}
         rothContribution={isCalculated ? taxData.rothContribution : "___"}
-        preTax401k={isCalculated ? taxData.preTax401k : "___"} // Show the pre-tax 401k contribution        
+        preTax401k={isCalculated ? taxData.preTax401k : "___"}
         netPay={isCalculated ? taxData.netPay : "___"}
         averageTaxRate={isCalculated ? taxData.averageTaxRate : ""}
         style={{ marginTop: "20px", zIndex: 2 }} // Ensure tax breakdown is above map
