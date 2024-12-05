@@ -13,19 +13,22 @@ const StateTaxBox = ({ selectedState }) => {
           border: '1px solid #ddd',
           borderRadius: '5px',
           boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-          marginTop: '20px', // Ensure there's space above
-          width: '300px', // Fixed width (thinner box)
-          maxWidth: '100%', // Ensure it doesn't stretch beyond the container
-          height: '150px', // Fixed height for the box
-          overflowY: 'auto', // Enable vertical scroll if content overflows
-          fontSize: '14px', // Consistent font size
-          fontWeight: 'bold', // Bold text for all content
+          marginTop: '20px',
+          width: '300px',
+          maxWidth: '100%',
+          height: '150px',
+          overflowY: 'auto',
+          fontSize: '14px',
+          fontWeight: 'bold',
         }}
       >
         <p>State Tax Information for: {selectedState}</p>
       </div>
     );
   }
+
+  // Check if all tax brackets have the same rate (flat tax)
+  const isFlatTax = stateInfo.every(bracket => bracket.rate === stateInfo[0].rate);
 
   return (
     <div
@@ -35,22 +38,31 @@ const StateTaxBox = ({ selectedState }) => {
         border: '1px solid #ddd',
         borderRadius: '1px',
         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-        marginTop: '20px', // Ensure there's space above
-        width: '300px', // Fixed width (thinner box)
-        maxWidth: '100%', // Ensure it doesn't stretch beyond the container
-        height: '180px', // Fixed height for the box
-        overflowY: 'auto', // Enable vertical scroll if content overflows
-        fontSize: '14px', // Consistent font size
-        fontWeight: 'bold', // Bold text for all content
+        marginTop: '20px',
+        width: '300px',
+        maxWidth: '100%',
+        height: '180px',
+        overflowY: 'auto',
+        fontSize: '14px',
+        fontWeight: 'bold',
       }}
     >
-      <h4 style={{ marginTop: '0px' }}>State Tax Information for: {selectedState}</h4> {/* Move title closer to the top */}
-      <ul style={{ marginTop: '0px' }}> {/* Reduce space between title and list */}
-        {stateInfo.map((bracket, index) => (
-          <li key={index}>
-            <strong>Up to ${bracket.threshold.toLocaleString()}:</strong> {bracket.rate}% tax rate
+      <h4 style={{ marginTop: '0px' }}>State Tax Information for: {selectedState}</h4>
+      
+      <ul style={{ marginTop: '0px' }}>
+        {/* If it's a flat tax, display just the rate */}
+        {isFlatTax ? (
+          <li>
+            <strong>{stateInfo[0].rate}% tax rate</strong>
           </li>
-        ))}
+        ) : (
+          // Otherwise, display the brackets as usual
+          stateInfo.map((bracket, index) => (
+            <li key={index}>
+              <strong>Up to ${bracket.threshold.toLocaleString()}:</strong> {bracket.rate}% tax rate
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );
