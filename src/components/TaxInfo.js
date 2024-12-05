@@ -13,6 +13,12 @@ const federalTaxBreakdown = [
   const averageTaxRateDefinition = `
     The Average Tax Rate is the total amount of taxes paid divided by your gross income, expressed as a percentage. It is a way to show the overall burden of taxes on your income. For example, if your gross income is $100,000 and you pay $20,000 in taxes, your average tax rate would be 20%.
   `;
+
+  const contributionDefinition = `
+    A traditional 401(k) withdrawals income before tax, meaning the total taxable income is brought down. The individual will pay taxes when accessing this money in the future.\n   
+    A Roth 401(k) withdrawls income after tax, meaning the individual will pay taxes in the present, and not the future.\n
+    It is worth considering which type of 401(k) will be financially advantageous depending on an invidual's current and predicted future income tax bracket.\n
+  `;
   
-  export { federalTaxBreakdown, averageTaxRateDefinition };
+  export { federalTaxBreakdown, averageTaxRateDefinition, contributionDefinition };
   

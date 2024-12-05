@@ -1,7 +1,7 @@
 import React from "react";
 import TaxLabel from "./TaxLabel";
 import TaxValue from "./TaxValue";
-import { federalTaxBreakdown, averageTaxRateDefinition } from "./TaxInfo";
+import { federalTaxBreakdown, averageTaxRateDefinition, contributionDefinition } from "./TaxInfo";
 
 // Helper function to format numbers with commas
 const formatNumber = (value) => {
@@ -63,7 +63,7 @@ const TaxBreakdown = ({
           <div style={{ width: "100%", height: "2px", backgroundColor: "#000", margin: "10px 0" }}></div>          
           {/* Traditional 401k */}
           <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="- 401k Contribution (Pre-tax)" />
+            <TaxLabel label="- 401(k) Contribution (Traditional)" />
             <TaxValue value={formatNumber(preTax401k)} />
           </div>
 
@@ -102,7 +102,7 @@ const TaxBreakdown = ({
 
           {/* 401k Contributions */}
           <div style={{ display: "flex", width: "100%" }}>
-            <TaxLabel label="- 401k Contribution (Roth)" />
+            <TaxLabel label="- 401(k) Contribution (Roth)" />
             <TaxValue value={formatNumber(rothContribution)} />
           </div>
 
@@ -182,6 +182,11 @@ const TaxBreakdown = ({
           {/* Average Tax Rate Definition */}
           <h3 style={{ fontSize: "16px", color: "#333" }}>Average Tax Rate Definition</h3>
           <p style={{ fontSize: "14px", color: "#555" }}>{averageTaxRateDefinition}</p>
+
+          {/* 401(k) Definition */}
+          <h3 style={{ fontSize: "16px", color: "#333" }}>Traditional vs Roth 401(k)</h3>
+          <p style={{ fontSize: "14px", color: "#555" }}>{contributionDefinition}</p>
+
         </div>
       </div>
     </div>
