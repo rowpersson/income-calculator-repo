@@ -1,10 +1,4 @@
-// src/components/MapComponent.js
-import React, { useState, useEffect } from "react";
-import Form from "../components/Form";
-import Map from "../components/Map";
-import TaxBreakdown from "../components/TaxBreakdown"; // Import the TaxBreakdown component
-
-const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+// src/data/StateTaxRates.js
 
 // State tax brackets for all 50 states (simplified example)
 const stateTaxRates = {

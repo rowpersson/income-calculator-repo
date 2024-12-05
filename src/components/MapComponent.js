@@ -53,7 +53,13 @@ const MapComponent = () => {
     if (originalSalary && isCalculated) {
       calculateTaxBreakdown();
     }
-  }, [frequency, selectedState, k401Contribution, isRoth, isCalculated]); // Include isCalculated to trigger on button press
+  }, [
+    frequency,
+    selectedState,
+    k401Contribution,
+    isRoth,
+    isCalculated,
+    originalSalary]); // Include isCalculated to trigger on button press
 
   const handleMouseEnter = (geo) => setHoveredState(geo.id);
   const handleMouseLeave = () => setHoveredState(null);
