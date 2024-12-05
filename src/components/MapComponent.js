@@ -3,6 +3,8 @@ import Form from "../components/Form";
 import Map from "../components/Map";
 import TaxBreakdown from "../components/TaxBreakdown"; // Import the TaxBreakdown component
 import stateTaxRates from "../data/StateTaxRates"; // Import stateTaxRates
+import StateTaxBox from '../components/StateTaxBox'; 
+import { textBoxNote } from "../components/TaxInfo";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -13,6 +15,7 @@ const MapComponent = () => {
   const [selectedState, setSelectedState] = useState(""); // State selected by user
   const [geographies, setGeographies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
 
   // State for storing tax data that will be displayed
   const [taxData, setTaxData] = useState({
@@ -277,34 +280,75 @@ useEffect(() => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", position: "relative", height: "80vh", padding: "10px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column", // Keep the main container as column
+        minHeight: "100vh", // Ensure the page is at least 100vh
+        padding: "10px",
+        position: "relative", // Set relative positioning on the container to position text box absolutely
+      }}
+    >
       {/* Title for Page */}
-      <h2 style={{ textAlign: "center", fontSize: "24px", marginBottom: "5px", fontWeight: "bold" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          fontSize: "24px",
+          marginBottom: "10px",
+          fontWeight: "bold",
+        }}
+      >
         United States Income Tax Calculator
       </h2>
       {/* Sub-title */}
-      <h2 style={{ textAlign: "center", fontSize: "14px", marginBottom: "0px", fontWeight: "bold" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          fontSize: "14px",
+          marginBottom: "20px",
+          fontWeight: "bold",
+        }}
+      >
         Hello! Please enter your information and press "calculate" to see your tax withholding information.
       </h2>
+  
       {/* Form Section */}
-      <Form
-        grossSalary={grossSalary}
-        handleSalaryChange={handleSalaryChange}
-        frequency={frequency}
-        handleFrequencyChange={handleFrequencyChange}
-        selectedState={selectedState}
-        handleDropdownChange={handleDropdownChange}
-        geographies={geographies}
-        handleCalculateClick={handleCalculateClick}
-        k401Contribution={k401Contribution}
-        handle401kChange={handle401kChange}
-        handleRothChange={handleRothChange}
-        contributionType={isRoth ? "roth" : "traditional"}
-        handleContributionTypeChange={handleContributionTypeChange}
-        style={{ marginBottom: "20px", zIndex: 3 }} // Higher zIndex for form fields
-      />
+      <div style={{ flexShrink: 0 }}>
+        <Form
+          grossSalary={grossSalary}
+          handleSalaryChange={handleSalaryChange}
+          frequency={frequency}
+          handleFrequencyChange={handleFrequencyChange}
+          selectedState={selectedState}
+          handleDropdownChange={handleDropdownChange}
+          geographies={geographies}
+          handleCalculateClick={handleCalculateClick}
+          k401Contribution={k401Contribution}
+          handle401kChange={handle401kChange}
+          handleRothChange={handleRothChange}
+          contributionType={isRoth ? "roth" : "traditional"}
+          handleContributionTypeChange={handleContributionTypeChange}
+          style={{
+            marginBottom: "50px", // Space between form and map
+          }}
+        />
+      </div>
+
+       {/* State Tax Info Section */}
+       <div style={{ flexDirection: 'column', alignItems: 'left' }}>
+        <StateTaxBox selectedState={selectedState} />
+      </div>
+
       {/* Map Section */}
-      <div style={{ flex: 1, height: "50vh", zIndex: 1, position: "relative" }}> {/* Map should take half the viewport height */}
+      <div
+        style={{
+          height: "50vh", // Make sure the map takes up 50% of the viewport height
+          width: "110%",
+          position: "relative",
+          marginTop: "-200px", 
+          marginBottom: "200px", // Give some space below the map
+        }}
+      >
         {isLoading ? (
           <div>Loading map...</div>
         ) : (
@@ -317,22 +361,50 @@ useEffect(() => {
           />
         )}
       </div>
+  
       {/* Tax Breakdown Section */}
-      <TaxBreakdown
-        salary={displaySalary()}
-        federalTax={isCalculated ? taxData.federalTax : "___"}
-        stateTax={isCalculated ? taxData.stateTax : "___"}
-        socialSecurity={isCalculated ? taxData.socialSecurity : "___"}
-        medicare={isCalculated ? taxData.medicare : "___"}
-        totalTax={isCalculated ? taxData.totalTax : "___"}
-        rothContribution={isCalculated ? taxData.rothContribution : "___"}
-        preTax401k={isCalculated ? taxData.preTax401k : "___"}
-        netPay={isCalculated ? taxData.netPay : "___"}
-        averageTaxRate={isCalculated ? taxData.averageTaxRate : ""}
-        style={{ marginTop: "20px", zIndex: 2 }} // Ensure tax breakdown is above map
+      <div
+        style={{
+          flexShrink: 0, // Prevent shrinking
+          marginTop: "10px", // Space between the map and the tax breakdown
+        }}
+      >
+        <TaxBreakdown
+          salary={displaySalary()}
+          federalTax={isCalculated ? taxData.federalTax : "___"}
+          stateTax={isCalculated ? taxData.stateTax : "___"}
+          socialSecurity={isCalculated ? taxData.socialSecurity : "___"}
+          medicare={isCalculated ? taxData.medicare : "___"}
+          totalTax={isCalculated ? taxData.totalTax : "___"}
+          rothContribution={isCalculated ? taxData.rothContribution : "___"}
+          preTax401k={isCalculated ? taxData.preTax401k : "___"}
+          netPay={isCalculated ? taxData.netPay : "___"}
+          averageTaxRate={isCalculated ? taxData.averageTaxRate : ""}
+          style={{
+            overflow: "auto", // Allow overflow within the tax breakdown section
+          }}
+        />
+      </div>
+  
+      {/* Text Box Note - Positioned at the Upper Right */}
+      <div
+          style={{
+          position: "absolute", // Position it absolutely within the container
+          top: "10px", // 10px from the top
+          right: "10px", // 10px from the right
+          width: "250px", // Adjust width as needed
+          padding: "10px", // Padding for the text box
+          backgroundColor: "#f9f9f9", // Light background
+          border: "1px solid #ddd", // Border around the text box
+          borderRadius: "5px", // Rounded corners for the text box
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // Optional: subtle shadow for a more card-like appearance
+          zIndex: 10, // Ensure it's above other content
+          fontSize: "14px",
+        }}
+        dangerouslySetInnerHTML={{ __html: textBoxNote }} // Use dangerouslySetInnerHTML to render HTML content
       />
     </div>
-  );
+  );       
 };
 
 export default MapComponent;

@@ -13,7 +13,7 @@ const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMous
         position: "relative",
         zIndex: 1,
         top: "-750px",
-        marginLeft: "100px",
+        //marginLeft: "2px",
     }}
     >
       <Geographies geography={geoUrl}>

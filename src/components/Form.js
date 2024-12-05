@@ -1,6 +1,6 @@
 import React from "react";
 
-// List of U.S. states (you can extend this list or load it from an external file)
+// List of U.S. states 
 const U_S_STATES = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
   "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
@@ -33,7 +33,7 @@ const Form = ({
 
     // Styles for form inputs and labels
     const inputStyle = {
-        padding: "12px",
+        padding: "5px",
         fontSize: "14px",
         border: "1px solid #ccc",
         borderRadius: "6px",
@@ -54,7 +54,7 @@ const Form = ({
     };
 
     const formWrapperStyle = {
-        width: "300px", // Set a fixed width for the form box
+        width: "250px", // Set a fixed width for the form box
         padding: "20px",
         backgroundColor: "#f9f9f9", // Light background color
         borderRadius: "8px", // Rounded corners
@@ -125,7 +125,7 @@ const Form = ({
             {/* 401(k) Contribution Amount */}
             <div style={formGroupStyle}>
                 <label htmlFor="contributionAmount" style={labelStyle}>
-                    Enter your 401(k) contribution
+                    Enter your 401(k) / 457(b) / 503(b) annual contribution
                 </label>
                 <input
                     id="contributionAmount"
@@ -136,7 +136,7 @@ const Form = ({
                     style={inputStyle}
                 />
                 <label htmlFor="contributionAmount" style={{ fontSize: "12px" }}>
-                    NOTE: the max 401k contribution amount for 2025 is $23,500 annually
+                    NOTE: the max contribution amount for this filing for 2025 is $23,500 annually
                 </label>                
             </div>
 

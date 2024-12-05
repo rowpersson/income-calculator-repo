@@ -16,9 +16,19 @@ const federalTaxBreakdown = [
 
   const contributionDefinition = `
     A traditional 401(k) withdrawals income before tax, meaning the total taxable income is brought down. The individual will pay taxes when accessing this money in the future.\n   
-    A Roth 401(k) withdrawls income after tax, meaning the individual will pay taxes in the present, and not the future.\n
+    A Roth 401(k) withdrawals income after tax, meaning the individual will pay taxes in the present, and not the future.\n
     It is worth considering which type of 401(k) will be financially advantageous depending on an invidual's current and predicted future income tax bracket.\n
   `;
+
+  const textBoxNote = `
+  *** Note ***<br><br>
+  This calculator is designed to formulate an individual's withholdings per paycheck, and should not be used for calculating tax returns.<br><br>
+  The following are not included in the formula:<br>
+  <ul>
+    <li>Itemized or standardized deductions</li>
+    <li>Capital losses/gains taxes</li>
+  </ul>
+`;
   
-  export { federalTaxBreakdown, averageTaxRateDefinition, contributionDefinition };
+  export { federalTaxBreakdown, averageTaxRateDefinition, contributionDefinition, textBoxNote };
   
