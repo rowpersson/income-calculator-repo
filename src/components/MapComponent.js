@@ -311,9 +311,13 @@ const calculateStateTax = (salary, state) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", position: "relative", height: "80vh", padding: "10px" }}>
     {/* Title for Page */}
-    <h2 style={{ textAlign: "center", fontSize: "24px", marginBottom: "20px", fontWeight: "bold" }}>
+    <h2 style={{ textAlign: "center", fontSize: "24px", marginBottom: "5px", fontWeight: "bold" }}>
       United States Income Tax Calculator
     </h2>      
+    {/* Sub-title */}
+    <h2 style={{ textAlign: "center", fontSize: "14px", marginBottom: "0px", fontWeight: "bold" }}>
+      Hello! Please enter your information and press "calculate" to see your tax withholding information.
+    </h2>  
       {/* Form Section */}
       <Form
         grossSalary={grossSalary}
@@ -352,7 +356,7 @@ const calculateStateTax = (salary, state) => {
         rothContribution={isCalculated ? taxData.rothContribution : "___"}
         preTax401k={isCalculated ? taxData.preTax401k : "___"} // Show the pre-tax 401k contribution        
         netPay={isCalculated ? taxData.netPay : "___"}
-        averageTaxRate={isCalculated ? taxData.averageTaxRate : "___"}
+        averageTaxRate={isCalculated ? taxData.averageTaxRate : ""}
         style={{ marginTop: "20px", zIndex: 2 }} // Ensure tax breakdown is above map
       />
     </div>

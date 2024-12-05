@@ -135,7 +135,7 @@ const TaxBreakdown = ({
       >
         <h2 style={{ textAlign: "center" }}>Additional Info</h2>
         <div>
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>Federal Tax Breakdown</h3>
+          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>Federal Income Tax Brackets</h3>
 
           {/* Tax Bracket Table */}
           <table
