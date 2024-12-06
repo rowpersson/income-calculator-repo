@@ -355,6 +355,7 @@ useEffect(() => {
           position: "relative",
           marginTop: "-200px", 
           marginBottom: "200px", // Give some space below the map
+          marginLeft: "-30px"
         }}
       >
         {isLoading ? (
