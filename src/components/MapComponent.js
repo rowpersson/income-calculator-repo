@@ -88,21 +88,29 @@ useEffect(() => {
     if (!brackets) {
       return 0; // No tax if the state doesn't have income tax
     }
+    
     let tax = 0;
     let lastThreshold = 0;
+  
     for (const bracket of brackets) {
       if (salary > bracket.threshold) {
+        // Apply tax only to the income within this bracket
         tax += (Math.min(salary, bracket.threshold) - lastThreshold) * (bracket.rate / 100);
         lastThreshold = bracket.threshold;
       } else {
+        // No need to continue if the salary is below the current threshold
         break;
       }
     }
+  
+    // Final portion of salary above the last threshold, if any
     if (salary > lastThreshold) {
       tax += (salary - lastThreshold) * (brackets[brackets.length - 1].rate / 100);
     }
+  
     return tax;
   };
+  
 
   const calculateFederalTax = (salary, frequency) => {
     const brackets = [

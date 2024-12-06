@@ -41,7 +41,7 @@ const StateTaxBox = ({ selectedState }) => {
         marginTop: '20px',
         width: '300px',
         maxWidth: '100%',
-        height: '180px',
+        height: 'auto',
         overflowY: 'auto',
         fontSize: '14px',
         fontWeight: 'bold',
@@ -56,12 +56,25 @@ const StateTaxBox = ({ selectedState }) => {
             <strong>{stateInfo[0].rate}% tax rate</strong>
           </li>
         ) : (
-          // Otherwise, display the brackets as usual
-          stateInfo.map((bracket, index) => (
-            <li key={index}>
-              <strong>Up to ${bracket.threshold.toLocaleString()}:</strong> {bracket.rate}% tax rate
-            </li>
-          ))
+          // Otherwise, display the brackets as usual with clarification for the last bracket
+          stateInfo.map((bracket, index) => {
+            const isLastBracket = index === stateInfo.length - 1;
+            
+            if (isLastBracket) {
+              // For the last bracket, don't show the "Up to" part, only "and above"
+              return (
+                <li key={index}>
+                  <strong>${bracket.threshold.toLocaleString()} and above:</strong> {bracket.rate}% tax rate
+                </li>
+              );
+            }
+
+            return (
+              <li key={index}>
+                <strong>Up to ${bracket.threshold.toLocaleString()}:</strong> {bracket.rate}% tax rate
+              </li>
+            );
+          })
         )}
       </ul>
     </div>
