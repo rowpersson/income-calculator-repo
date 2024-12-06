@@ -173,9 +173,8 @@ const stateTaxRates = {
     { rate: 5.50, threshold: 80650 },
     { rate: 6.00, threshold: 215400 },
     { rate: 6.85, threshold: 1077550 },
-    { rate: 9.65, threshold: 1077550 },
-    { rate: 10.30, threshold: 5000000 },
-    { rate: 10.90, threshold: 25000000 },
+    { rate: 9.65, threshold: 5000000 },
+    { rate: 10.30, threshold: 25000000 },
     { rate: 10.90, threshold: 25000000 }
   ],
   "North Carolina": [

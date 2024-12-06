@@ -27,6 +27,8 @@ const federalTaxBreakdown = [
   <ul>
     <li>Itemized or standardized deductions</li>
     <li>Capital losses/gains taxes</li>
+    <li>Local city taxes</li>
+    <li>Health Savings Account (HSA) deductions</li>
   </ul>
 `;
   
