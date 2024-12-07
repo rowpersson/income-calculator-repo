@@ -2,7 +2,7 @@
 import React from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
-const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMouseLeave }) => {
+const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMouseLeave, onStateClick }) => {
   return (
     <ComposableMap
       projection="geoAlbersUsa"
@@ -13,7 +13,6 @@ const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMous
         position: "relative",
         zIndex: 1,
         top: "-750px",
-        //marginLeft: "2px",
     }}
     >
       <Geographies geography={geoUrl}>
@@ -32,6 +31,7 @@ const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMous
                     geography={geo}
                     onMouseEnter={() => handleMouseEnter(geo)}
                     onMouseLeave={handleMouseLeave}
+                    onClick={() => onStateClick(geo.properties.name)}
                     fill={
                       isHovered
                         ? "#FF5733"

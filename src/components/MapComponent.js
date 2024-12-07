@@ -36,6 +36,8 @@ const MapComponent = () => {
   const [isRoth, setIsRoth] = useState(false); // Track if the 401(k) contribution is Roth or traditional
   const [isCalculated, setIsCalculated] = useState(false); // Track if Calculate button has been clicked
 
+  const [fileType, setFileType] = useState("csv"); // Default to CSV
+
   useEffect(() => {
     const fetchGeographies = async () => {
       try {
@@ -81,6 +83,11 @@ useEffect(() => {
     setOriginalSalary(grossSalary); // Only update original salary when calculate button is clicked
     setIsCalculated(true); // Mark that the calculation has been triggered
   };
+
+  // Handle click on a state from the map
+  const handleStateClick = (stateId) => {
+    setSelectedState(stateId);
+    };
 
   // Tax calculation functions
   const calculateStateTax = (salary, state) => {
@@ -287,6 +294,70 @@ useEffect(() => {
     setIsRoth(event.target.value === "roth"); // Set isRoth to true if Roth is selected
   };
 
+  // Function to export tax data as CSV
+  const exportTaxData = () => {
+    const csvContent = [
+      ["State", "Frequency", "Salary", "Federal Tax", "State Tax", "Social Security", "Medicare", "Total Tax", "Net Pay", "Average Tax Rate", "Roth 401k Contribution", "Pre-tax 401k Contribution"],
+      [
+        selectedState,
+        frequency,
+        taxData.salary,
+        taxData.federalTax,
+        taxData.stateTax,
+        taxData.socialSecurity,
+        taxData.medicare,
+        taxData.totalTax,
+        taxData.netPay,
+        taxData.averageTaxRate,
+        taxData.rothContribution,
+        taxData.preTax401k,
+      ]
+    ]
+      .map(row => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "tax_breakdown.csv"; 
+    link.click(); 
+  };
+
+  // Function to export tax data as Text file
+  const exportTaxDataAsText = () => {
+    const textContent = `
+      Tax Breakdown Report for $${taxData.salary} ${frequency} in ${selectedState}
+      ============================
+      Federal Tax: $${taxData.federalTax}
+      State Tax: $${taxData.stateTax}
+      Social Security: $${taxData.socialSecurity}
+      Medicare: $${taxData.medicare}
+      Total Tax: $${taxData.totalTax}
+      Net Pay: $${taxData.netPay}
+      Average Tax Rate: ${taxData.averageTaxRate}%
+      Roth 401k Contribution: $${taxData.rothContribution}
+      Pre-tax 401k Contribution: $${taxData.preTax401k}
+
+      ============================
+      Thank you for using the tax calculator!
+    `;
+
+    const blob = new Blob([textContent], { type: "text/plain;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "tax_breakdown.txt"; 
+    link.click(); 
+  };
+
+  // Function to handle Export based on file type (CSV or Text)
+  const handleExport = () => {
+    if (fileType === "csv") {
+      exportTaxData(); // Export as CSV
+    } else {
+      exportTaxDataAsText(); // Export as Text file
+    }
+  };
+
   return (
     <div
       style={{
@@ -328,6 +399,7 @@ useEffect(() => {
           frequency={frequency}
           handleFrequencyChange={handleFrequencyChange}
           selectedState={selectedState}
+          onStateChange={handleDropdownChange}
           handleDropdownChange={handleDropdownChange}
           geographies={geographies}
           handleCalculateClick={handleCalculateClick}
@@ -367,6 +439,7 @@ useEffect(() => {
             selectedState={selectedState}
             handleMouseEnter={handleMouseEnter}
             handleMouseLeave={handleMouseLeave}
+            onStateClick={handleStateClick}
           />
         )}
       </div>
@@ -394,7 +467,67 @@ useEffect(() => {
           }}
         />
       </div>
-  
+
+     {/* Add Export Format Selection */}
+     <div style={{ textAlign: "center", marginTop: "-1px" }}>
+        <label>
+          <input
+            type="radio"
+            name="fileType"
+            value="csv"
+            checked={fileType === "csv"}
+            onChange={() => setFileType("csv")}
+            style={{ marginRight: "10px" }}
+          />
+          CSV
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="fileType"
+            value="text"
+            checked={fileType === "text"}
+            onChange={() => setFileType("text")}
+            style={{ marginLeft: "20px", marginRight: "10px" }}
+          />
+          Text
+        </label>
+      </div>
+
+      {/* Add Export Button */}
+      <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>
+        <button 
+          onClick={handleExport}
+          style={{
+            marginTop: "-100px",
+            padding: "10px 20px",
+            fontSize: "16px",
+            cursor: "pointer",
+            backgroundColor: "#4CAF50",
+            color: "white",
+            border: "none",
+            borderRadius: "5px"
+          }}
+        >
+          Export Tax Breakdown
+        </button>
+      </div>
+
+      <textarea
+          placeholder="For reference, please find the breakdown of 2024 state income taxes here: https://taxfoundation.org/data/all/state/state-income-tax-rates-2024/ "
+          style={{
+            width: "100%",
+            height: "20px",
+            padding: "5px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            color: "#333",
+            backgroundColor: "#f9f9f9",
+          }}
+        />
+
       {/* Text Box Note - Positioned at the Upper Right */}
       <div
           style={{

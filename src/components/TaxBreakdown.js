@@ -196,25 +196,12 @@ const TaxBreakdown = ({
       <div
         style={{
           width: "100%",
-          padding: "20px",
-          marginTop: "20px",
+          padding: "10px",
+          marginTop: "10px",
+          marginBottom: "-10px",
           borderTop: "2px solid #000",  // Optional: Adds a line at the top of the space
         }}
       >
-        <textarea
-          placeholder="For reference, please find the breakdown of 2024 state income taxes here: https://taxfoundation.org/data/all/state/state-income-tax-rates-2024/ "
-          style={{
-            width: "100%",
-            height: "50px",
-            padding: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            color: "#333",
-            backgroundColor: "#f9f9f9",
-          }}
-        />
       </div>
     </div>
   );
