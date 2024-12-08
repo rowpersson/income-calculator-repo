@@ -36,7 +36,7 @@ const MapComponent = () => {
   const [isRoth, setIsRoth] = useState(false); // Track if the 401(k) contribution is Roth or traditional
   const [isCalculated, setIsCalculated] = useState(false); // Track if Calculate button has been clicked
 
-  const [fileType, setFileType] = useState("csv"); // Default to CSV
+  const [fileType, setFileType] = useState(); // Default to CSV
 
   useEffect(() => {
     const fetchGeographies = async () => {
@@ -350,11 +350,15 @@ useEffect(() => {
   };
 
   // Function to handle Export based on file type (CSV or Text)
-  const handleExport = () => {
+    const handleExport = () => {
+    console.log("Exporting as:", fileType); // Add a console log for debugging
+    
     if (fileType === "csv") {
       exportTaxData(); // Export as CSV
-    } else {
+    } else if (fileType === "text") {
       exportTaxDataAsText(); // Export as Text file
+    } else {
+      console.log("Invalid file type selected.");
     }
   };
 
@@ -469,44 +473,51 @@ useEffect(() => {
       </div>
 
      {/* Add Export Format Selection */}
-     <div style={{ textAlign: "center", marginTop: "-1px" }}>
-        <label>
-          <input
-            type="radio"
-            name="fileType"
-            value="csv"
-            checked={fileType === "csv"}
-            onChange={() => setFileType("csv")}
-            style={{ marginRight: "10px" }}
-          />
-          CSV
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="fileType"
-            value="text"
-            checked={fileType === "text"}
-            onChange={() => setFileType("text")}
-            style={{ marginLeft: "20px", marginRight: "10px" }}
-          />
-          Text
-        </label>
-      </div>
+     <div style={{ textAlign: "center", marginTop: "-1px", zIndex: 100 }}>
+      <label>
+        <input
+          type="radio"
+          name="fileType"
+          value="csv"
+          checked={fileType === "csv"}
+          onChange={() => setFileType("csv")}
+          style={{ marginRight: "10px" }}
+        />
+        CSV
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="fileType"
+          value="text"
+          checked={fileType === "text"}
+          onChange={() => setFileType("text")}
+          style={{ marginLeft: "20px", marginRight: "10px" }}
+        />
+        Text
+      </label>
+    </div>
 
       {/* Add Export Button */}
-      <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>
+      <div style={{
+        textAlign: "center",
+        marginTop: "20px",
+        marginBottom: "20px",
+        zindex: 101,
+        position: "relative"
+         }}>
         <button 
           onClick={handleExport}
           style={{
-            marginTop: "-100px",
+            //marginTop: "-100px",
             padding: "10px 20px",
             fontSize: "16px",
             cursor: "pointer",
             backgroundColor: "#4CAF50",
             color: "white",
             border: "none",
-            borderRadius: "5px"
+            borderRadius: "5px",
+            zindex: 102
           }}
         >
           Export Tax Breakdown
