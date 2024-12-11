@@ -5,6 +5,7 @@ import TaxBreakdown from "../components/TaxBreakdown"; // Import the TaxBreakdow
 import stateTaxRates from "../data/StateTaxRates"; // Import stateTaxRates
 import StateTaxBox from '../components/StateTaxBox'; 
 import { textBoxNote } from "../components/TaxInfo";
+import { Link } from "react-router-dom";  // Import the Link component for navigation
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -370,14 +371,64 @@ useEffect(() => {
         padding: "20px",
         position: "relative", // Absolute positioning works for text box note
         backgroundColor: "#f4f7f6", // Light background color for overall page
+        maxWidth: "1400px"
       }}
-    >
+      >
+        {/* Horizontal Banner */}
+        <div
+      style={{
+        width: "100%", // Full width of the page
+        height: "50px", // Set a fixed height for the banner
+        backgroundColor: "#2980b9", // Color for the banner (change to any color)
+        display: "flex",
+        justifyContent: "center", // Center content horizontally
+        alignItems: "center", // Center content vertically
+        color: "#fff", // White text color
+        fontWeight: "bold", // Make the text bold
+      }}
+      >
+      {/* First Button: Stay on Home */}
+      <button
+        onClick={() => console.log("Home button clicked")}
+        style={{
+          backgroundColor: "#fff",
+          color: "#2980b9",
+          padding: "8px 30px",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          marginRight: "10px"
+        }}
+      >
+        Calculator Home
+      </button>
+
+      {/* Second Button: Link to Another Page */}
+      <Link to="/tax-information"> 
+        <button
+          style={{
+            backgroundColor: "#fff",
+            color: "#2980b9",
+            padding: "8px 16px",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            marginLeft: "5px"
+          }}
+        >
+          Additional Tax Information
+        </button>
+      </Link>
+    </div>
+
       {/* Title for Page */}
       <h2
         style={{
           textAlign: "center",
           fontSize: "32px", // Larger font for visibility
-          marginBottom: "12px",
+          marginBottom: "1px",
           fontWeight: "bold",
           color: "#2c3e50", // Dark text for contrast
         }}
@@ -586,8 +637,8 @@ useEffect(() => {
       <div
         style={{
           position: "absolute",
-          top: "10px",
-          right: "10px",
+          top: "75px",
+          right: "20px",
           width: "250px",
           padding: "15px",
           backgroundColor: "#f9f9f9",

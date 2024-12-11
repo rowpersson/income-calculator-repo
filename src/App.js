@@ -1,13 +1,18 @@
 // src/App.js
-import React from "react";
-import MapComponent from "./components/MapComponent";
 
-const App = () => {
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import MapComponent from "./components/MapComponent";  
+import TaxInfoPage from "./components/TaxInfoPage";
+
+function App() {
   return (
-    <div>
-      <MapComponent />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MapComponent />} />
+        <Route path="/tax-information" element={<TaxInfoPage />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
