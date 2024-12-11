@@ -20,8 +20,8 @@ const TaxBreakdown = ({
   totalTax,
   netPay,
   averageTaxRate,
-  rothContribution, // Add rothContribution prop
-  preTax401k, // Add preTax401k prop
+  rothContribution, 
+  preTax401k,
 }) => {
   // Function to safely handle the tax rates and format them correctly
   const formatPercentage = (value) => {
@@ -40,7 +40,6 @@ const TaxBreakdown = ({
           justifyContent: "space-between",
           width: "100%",
           padding: "20px",
-          marginTop: "-350px",
         }}
       >
         {/* Withholding Box */}

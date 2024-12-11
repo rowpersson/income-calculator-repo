@@ -7,12 +7,11 @@ const Map = ({ geoUrl, hoveredState, selectedState, handleMouseEnter, handleMous
     <ComposableMap
       projection="geoAlbersUsa"
       projectionConfig={{
-        scale: 500,
+        scale: 800,
       }}
       style={{
         position: "relative",
         zIndex: 1,
-        top: "-750px",
     }}
     >
       <Geographies geography={geoUrl}>

@@ -366,93 +366,136 @@ useEffect(() => {
     <div
       style={{
         display: "flex",
-        flexDirection: "column", // Keep the main container as column
-        minHeight: "100vh", // Ensure the page is at least 100vh
-        padding: "10px",
-        position: "relative", // Set relative positioning on the container to position text box absolutely
+        flexDirection: "column", // Stack elements vertically
+        minHeight: "100vh", // Full height of the viewport
+        padding: "20px",
+        position: "relative", // Absolute positioning works for text box note
+        backgroundColor: "#f4f7f6", // Light background color for overall page
       }}
     >
       {/* Title for Page */}
       <h2
         style={{
           textAlign: "center",
-          fontSize: "24px",
-          marginBottom: "10px",
+          fontSize: "32px", // Larger font for visibility
+          marginBottom: "12px",
           fontWeight: "bold",
+          color: "#2c3e50", // Dark text for contrast
         }}
       >
         United States Income Tax Calculator
       </h2>
+  
       {/* Sub-title */}
-      <h2
+      <h3
         style={{
           textAlign: "center",
-          fontSize: "14px",
-          marginBottom: "20px",
-          fontWeight: "bold",
+          fontSize: "18px",
+          marginBottom: "30px",
+          fontWeight: "normal",
+          color: "#7f8c8d", // Soft gray for subheading
         }}
       >
         Hello! Please enter your information and press "calculate" to see your tax withholding information.
-      </h2>
+      </h3>
   
-      {/* Form Section */}
-      <div style={{ flexShrink: 0 }}>
-        <Form
-          grossSalary={grossSalary}
-          handleSalaryChange={handleSalaryChange}
-          frequency={frequency}
-          handleFrequencyChange={handleFrequencyChange}
-          selectedState={selectedState}
-          onStateChange={handleDropdownChange}
-          handleDropdownChange={handleDropdownChange}
-          geographies={geographies}
-          handleCalculateClick={handleCalculateClick}
-          k401Contribution={k401Contribution}
-          handle401kChange={handle401kChange}
-          handleRothChange={handleRothChange}
-          contributionType={isRoth ? "roth" : "traditional"}
-          handleContributionTypeChange={handleContributionTypeChange}
-          style={{
-            marginBottom: "50px", // Space between form and map
-          }}
-        />
-      </div>
-
-       {/* State Tax Info Section */}
-       <div style={{ flexDirection: 'column', alignItems: 'left' }}>
-        <StateTaxBox selectedState={selectedState} />
-      </div>
-
-      {/* Map Section */}
+      {/* Main Section with Form and Map */}
       <div
         style={{
-          height: "50vh", // Make sure the map takes up 50% of the viewport height
-          width: "110%",
-          position: "relative",
-          marginTop: "-200px", 
-          marginBottom: "200px", // Give some space below the map
-          marginLeft: "-30px"
+          display: "flex", // Use flexbox for horizontal layout
+          justifyContent: "space-between", // Space the form and map evenly
+          backgroundColor: "#ffffff", // Set background color for the entire section
+          borderRadius: "8px", // Rounded corners for both containers
+          padding: "20px", // Add padding around the sections
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Light shadow for the overall container
+          marginBottom: "30px", // Space below the section
         }}
       >
-        {isLoading ? (
-          <div>Loading map...</div>
-        ) : (
-          <Map
-            geoUrl={geoUrl}
-            hoveredState={hoveredState}
+        {/* Form Section */}
+        <div
+          style={{
+            flex: 0.45, // Takes up 50% of the space (or adjust as needed)
+            backgroundColor: "#f9f9f9", // Same background color as the map section
+            borderRadius: "8px", // Rounded corners for the form container
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Same shadow as the map
+            padding: "20px", // Padding inside the container
+            marginRight: "20px", // Space between form and map
+          }}
+        >
+          <Form
+            grossSalary={grossSalary}
+            handleSalaryChange={handleSalaryChange}
+            frequency={frequency}
+            handleFrequencyChange={handleFrequencyChange}
             selectedState={selectedState}
-            handleMouseEnter={handleMouseEnter}
-            handleMouseLeave={handleMouseLeave}
-            onStateClick={handleStateClick}
+            onStateChange={handleDropdownChange}
+            handleDropdownChange={handleDropdownChange}
+            geographies={geographies}
+            handleCalculateClick={handleCalculateClick}
+            k401Contribution={k401Contribution}
+            handle401kChange={handle401kChange}
+            handleRothChange={handleRothChange}
+            contributionType={isRoth ? "roth" : "traditional"}
+            handleContributionTypeChange={handleContributionTypeChange}
           />
-        )}
+        </div>
+  
+        {/* Map Section */}
+        <div
+          style={{
+            flex: 2, // Takes up 50% of the space (or adjust as needed)
+            height: "100vh", // Set map height to 50% of the viewport height
+            position: "relative", // Keep relative positioning for map shadow
+            borderRadius: "8px", // Rounded corners for the map container
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Same shadow as the form
+            backgroundColor: "#f9f9f9", // Same background color as the form section
+          }}
+        >
+          {isLoading ? (
+            <div
+              style={{
+                textAlign: "center",
+                paddingTop: "20px",
+                fontSize: "18px",
+                color: "#7f8c8d", // Soft gray text while loading
+              }}
+            >
+              Loading map...
+            </div>
+          ) : (
+            <Map
+              geoUrl={geoUrl}
+              hoveredState={hoveredState}
+              selectedState={selectedState}
+              handleMouseEnter={handleMouseEnter}
+              handleMouseLeave={handleMouseLeave}
+              onStateClick={handleStateClick}
+            />
+          )}
+        </div>
+      </div>
+  
+      {/* State Tax Info Section */}
+      <div
+        style={{
+          backgroundColor: "#ffffff", // White background for the state tax info
+          borderRadius: "8px", // Rounded corners for the state tax box
+          padding: "20px", // Padding inside the container
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Light shadow for the state tax box
+          marginBottom: "30px", // Space between state tax info and map
+        }}
+      >
+        <StateTaxBox selectedState={selectedState} />
       </div>
   
       {/* Tax Breakdown Section */}
       <div
         style={{
-          flexShrink: 0, // Prevent shrinking
-          marginTop: "10px", // Space between the map and the tax breakdown
+          backgroundColor: "#ffffff",
+          borderRadius: "8px",
+          padding: "20px",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+          marginBottom: "30px", // Space between tax breakdown and export options
         }}
       >
         <TaxBreakdown
@@ -471,93 +514,90 @@ useEffect(() => {
           }}
         />
       </div>
-
-     {/* Add Export Format Selection */}
-     <div style={{ textAlign: "center", marginTop: "-1px", zIndex: 100 }}>
-      <label>
-        <input
-          type="radio"
-          name="fileType"
-          value="csv"
-          checked={fileType === "csv"}
-          onChange={() => setFileType("csv")}
-          style={{ marginRight: "10px" }}
-        />
-        CSV
-      </label>
-      <label>
-        <input
-          type="radio"
-          name="fileType"
-          value="text"
-          checked={fileType === "text"}
-          onChange={() => setFileType("text")}
-          style={{ marginLeft: "20px", marginRight: "10px" }}
-        />
-        Text
-      </label>
-    </div>
-
+  
+      {/* Add Export Format Selection */}
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        <label style={{ marginRight: "10px" }}>
+          <input
+            type="radio"
+            name="fileType"
+            value="csv"
+            checked={fileType === "csv"}
+            onChange={() => setFileType("csv")}
+            style={{ marginRight: "5px" }}
+          />
+          CSV
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="fileType"
+            value="text"
+            checked={fileType === "text"}
+            onChange={() => setFileType("text")}
+            style={{ marginLeft: "20px", marginRight: "10px" }}
+          />
+          Text
+        </label>
+      </div>
+  
       {/* Add Export Button */}
-      <div style={{
-        textAlign: "center",
-        marginTop: "20px",
-        marginBottom: "20px",
-        zindex: 101,
-        position: "relative"
-         }}>
-        <button 
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+        <button
           onClick={handleExport}
           style={{
-            //marginTop: "-100px",
-            padding: "10px 20px",
+            padding: "12px 24px",
             fontSize: "16px",
             cursor: "pointer",
             backgroundColor: "#4CAF50",
             color: "white",
             border: "none",
             borderRadius: "5px",
-            zindex: 102
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Shadow for button
           }}
         >
           Export Tax Breakdown
         </button>
       </div>
-
+  
+      {/* Reference Link Text Area */}
       <textarea
-          placeholder="For reference, please find the breakdown of 2024 state income taxes here: https://taxfoundation.org/data/all/state/state-income-tax-rates-2024/ "
-          style={{
-            width: "100%",
-            height: "20px",
-            padding: "5px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            color: "#333",
-            backgroundColor: "#f9f9f9",
-          }}
-        />
-
+        placeholder="For reference, please find the breakdown of 2024 state income taxes here: https://taxfoundation.org/data/all/state/state-income-tax-rates-2024/"
+        style={{
+          width: "100%",
+          height: "20px",
+          padding: "12px",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontWeight: "bold",
+          color: "#333",
+          backgroundColor: "#f9f9f9",
+          marginBottom: "30px",
+        }}
+      />
+  
       {/* Text Box Note - Positioned at the Upper Right */}
       <div
-          style={{
-          position: "absolute", // Position it absolutely within the container
-          top: "10px", // 10px from the top
-          right: "10px", // 10px from the right
-          width: "250px", // Adjust width as needed
-          padding: "10px", // Padding for the text box
-          backgroundColor: "#f9f9f9", // Light background
-          border: "1px solid #ddd", // Border around the text box
-          borderRadius: "5px", // Rounded corners for the text box
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // Optional: subtle shadow for a more card-like appearance
-          zIndex: 10, // Ensure it's above other content
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          width: "250px",
+          padding: "15px",
+          backgroundColor: "#f9f9f9",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
           fontSize: "14px",
+          color: "#2c3e50",
+          zIndex: 10,
         }}
-        dangerouslySetInnerHTML={{ __html: textBoxNote }} // Use dangerouslySetInnerHTML to render HTML content
+        dangerouslySetInnerHTML={{ __html: textBoxNote }}
       />
     </div>
-  );       
+  );
+   
 };
 
 export default MapComponent;
