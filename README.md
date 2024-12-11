@@ -12,7 +12,7 @@ In the project directory, you can run:
 Which runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-You can also visit: xxx to see the production version of the app.
+You can also visit: usincometaxcalculator.com to see the production version of the app.
 
 Cheers!
 
