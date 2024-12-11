@@ -15,8 +15,7 @@ const MapComponent = () => {
   const [selectedState, setSelectedState] = useState(""); // State selected by user
   const [geographies, setGeographies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-
+  
   // State for storing tax data that will be displayed
   const [taxData, setTaxData] = useState({
     salary: 0,
@@ -541,22 +540,28 @@ useEffect(() => {
         </label>
       </div>
   
-      {/* Add Export Button */}
+      {/* Export Button */}
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
-        <button
-          onClick={handleExport}
-          style={{
-            padding: "12px 24px",
-            fontSize: "16px",
-            cursor: "pointer",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Shadow for button
-          }}
-        >
-          Export Tax Breakdown
+      <button
+        onClick={handleExport}
+        type="button"
+        style={{
+          padding: "12px 24px",
+          fontSize: "16px",
+          cursor: "pointer",
+          backgroundColor: "#3498db", // Soft blue background
+          color: "white", // Text color
+          border: "none",
+          borderRadius: "5px",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", // Shadow for button
+          transition: "background-color 0.3s, transform 0.1s ease, box-shadow 0.2s", // Smooth transitions
+        }}
+        onMouseEnter={(e) => e.target.style.backgroundColor = "#2980b9"} // Darker blue on hover
+        onMouseLeave={(e) => e.target.style.backgroundColor = "#3498db"} // Revert back to original blue
+        onMouseDown={(e) => e.target.style.transform = "scale(0.98)"} // Slightly shrink on click
+        onMouseUp={(e) => e.target.style.transform = "scale(1)"} // Reset to original size
+  >
+    Export Tax Breakdown
         </button>
       </div>
   
