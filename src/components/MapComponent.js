@@ -636,10 +636,11 @@ useEffect(() => {
       {/* Text Box Note - Positioned at the Upper Right */}
       <div
         style={{
-          position: "absolute",
+          position: "fixed",
           top: "75px",
           right: "20px",
-          width: "250px",
+          width: "calc(100% - 40px)",
+          maxWidth: "250px",
           padding: "15px",
           backgroundColor: "#f9f9f9",
           border: "1px solid #ddd",
